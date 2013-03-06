@@ -3,7 +3,9 @@
 Import::php("OpenM-Services.client.OpenM_HttpServerError");
 
 /**
- * 
+ * OpenM_HttpError_NotImplemented is used to catch HTTP 501 error.
+ * @package OpenM 
+* @subpackage OpenM\OpenM-Services\client
  * @copyright (c) 2013, www.open-miage.org
  * @license http://www.apache.org/licenses/LICENSE-2.0 Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

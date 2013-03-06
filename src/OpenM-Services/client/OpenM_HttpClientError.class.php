@@ -3,7 +3,7 @@
 Import::php("OpenM-Services.client.OpenM_ServiceClientException");
 
 /**
- * OpenM_HttpClientError is un exception throws by OpenM_ServiceClient.
+ * OpenM_HttpClientError is un exception throws by OpenM_ServiceClient and used to catch HTTP client error.
  * @package OpenM 
  * @subpackage OpenM\OpenM-Services\client 
  * @copyright (c) 2013, www.open-miage.org
