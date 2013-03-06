@@ -3,7 +3,9 @@
 Import::php("OpenM-Services.client.OpenM_HttpClientError");
 
 /**
- * 
+ * OpenM_HttpError_Forbidden is used to catch HTTP 403 error.
+ * @package OpenM 
+ * @subpackage OpenM\OpenM-Services\client
  * @copyright (c) 2013, www.open-miage.org
  * @license http://www.apache.org/licenses/LICENSE-2.0 Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
