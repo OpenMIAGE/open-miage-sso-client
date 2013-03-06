@@ -1,4 +1,4 @@
-OpenM_SSO / client / 1.0.3
+OpenM_SSO / client / example
 =====================
 
 Description
@@ -7,22 +7,17 @@ This package is provided by www.open-miage.org
 
 Prerequis
 =====================
- * PHP 5.2.x and after
-
-Because of using OpenID from Janrain (https://github.com/openid/php-openid/): need to install OpenID dependencies (already installed in most of hosting offers).
-
- * Enable either the GMP extension or Bcmath extension. (GMP is
-     STRONGLY recommended because it's MUCH faster!)  This is
-     required.
- * Enable the CURL extension.
+ * PHP 5.2.x min
+ * CURL extension.
+ * GMP extension (or Bcmath, but GMP is mutch faster)
 
 Example
 =====================
 This package used *.example.open-miage.fr services (all is already setup).
 
-To use ./example :
- * copy ./example and ./src under the same directory on a http server
- * launch ./example/ http url on server that host your example
+    To use ./example :
+     * copy ./example and ./src under the same directory on a http server
+     * launch ./example/ http url on server that host your example
 
 Remarque
 =====================
