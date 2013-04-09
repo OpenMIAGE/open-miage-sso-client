@@ -26,27 +26,30 @@ if (!Import::php("Smarty"))
 class OpenM_ServiceClientJSGeneratorServer {
 
     const FILE_URL_PARAMETER = "api_gen";
+    const MIN_MODE_PARAMETER = "min";
+    
+    private $root_path;
 
-    public static function display($api) {
+    public static function display($api, $min = true, $root_path=null) {
         if (!is_file("$api.interface.php"))
             die("Forbidden display");
 
-        if(!Import::php("$api"))
+        if (!Import::php("$api"))
             throw new ImportException("$api");
 
         $smarty = new Smarty();
 
         $reflexion = new ReflectionClass("$api");
-        
+
         $constants = $reflexion->getConstants();
         $arrayConstants = array();
-        foreach($constants as $name => $value){
+        foreach ($constants as $name => $value) {
             $arrayConstant = array();
             $arrayConstant["name"] = $name;
             $arrayConstant["value"] = $value;
             $arrayConstants[] = $arrayConstant;
         }
-        
+
         $smarty->assign("constants", $arrayConstants);
 
         $methods = get_class_methods("$api");
@@ -81,16 +84,21 @@ class OpenM_ServiceClientJSGeneratorServer {
 
         $smarty->assign("methods", $arrayMethods);
         $smarty->assign("api", "$api");
-        $smarty->assign("api_url", "/api/");
+        $smarty->assign("api_url", $root_path);
+        $smarty->assign("min", $min);
         header('Content-type: text/javascript');
         $smarty->display(__DIR__ . "/tpl/OpenM_ServiceClientJSGenerator.tpl");
         exit();
     }
 
-    public static function handle() {
+    public function __construct($root_path=null) {
+        $this->root_path = $root_path;
+    }
+    
+    public function handle() {
         if (isset($_GET[self::FILE_URL_PARAMETER])) {
             try {
-                self::display($_GET[self::FILE_URL_PARAMETER]);
+                self::display($_GET[self::FILE_URL_PARAMETER], isset($_GET[self::MIN_MODE_PARAMETER]), $this->root_path);
             } catch (Exception $e) {
                 die($e->getMessage());
             }
