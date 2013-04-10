@@ -9,5 +9,5 @@ var {$api}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{if $mi
             {/if}function(r){literal}{{/literal}{if $min!=true}callback_function(r){else}cb(r){/if}{literal}}{/literal}{if $min!=true} 
         {/if});{if $min!=true} 
     {/if}{literal}}{/literal},{if $min!=true} 
-{/if}{/foreach}{if $min!=true}
+{/if}{/foreach}'ok':1{if $min!=true}
 {/if}{literal}}{/literal};

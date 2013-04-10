@@ -4,7 +4,7 @@ Import::php("OpenM-Controller.client.OpenM_RESTControllerClient");
 Import::php("util.http.OpenM_URL");
 Import::php("util.HashtableString");
 Import::php("util.OpenM_Log");
-Import::php("OpenM-Service.client.OpenM_ServiceSSOClientImpl");
+Import::php("OpenM-Services.client.OpenM_ServiceSSOClientImpl");
 Import::php("OpenM-SSO.client.OpenM_SSOSession");
 
 /**
