@@ -63,12 +63,9 @@ class OpenM_RESTControllerClient_JSONLocalServer {
             else
                 break;
         }
-
-        $client = new OpenM_ServiceSSOClientImpl($this->sso, $api);
         
         try {
-            $echo = call_user_method($method, $client, $args);
-            die($echo);
+            echo OpenM_RESTControllerClient::call($this->api_path, $api, $method, $args, $this->sso, true);
         } catch (Exception $e) {
             die(OpenM_MapConvertor::arrayToJSON(array(
                         OpenM_Service::RETURN_ERROR_PARAMETER => "",
