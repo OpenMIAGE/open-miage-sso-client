@@ -5,9 +5,12 @@ var {$api}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{if $mi
     {/if}'r':{if $min!=true} {/if}'{$api_url}?api={$api}&method=',{if $min!=true} 
 {/if}{foreach from=$methods item=method}{if $min!=true}
     {/if}'{$method.name}':{if $min!=true} {/if}function({foreach from=$method.args item=arg}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}{if $min!=true}callback_function{else}cb{/if}){literal}{{/literal}{if $min!=true} 
-        {/if}$.post(this.r+'{$method.name}',{if $min!=true} {/if}{literal}{{/literal}{foreach from=$method.args item=arg}{$arg.parameterName}:{if $min!=true} {/if}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}{if $min!=true} {/if}ok:1{literal}}{/literal},{if $min!=true} {/if}{if $min!=true} 
-            {/if}function(r){literal}{{/literal}{if $min!=true}callback_function(r){else}cb(r){/if}{literal}}{/literal}{if $min!=true} 
-        {/if});{if $min!=true} 
+        {/if}if({if $min!=true}callback_function{else}cb{/if}===undefined){if $min!=true} 
+            {/if}$.post(this.r+'{$method.name}',{if $min!=true} {/if}{literal}{{/literal}{foreach from=$method.args item=arg}{$arg.parameterName}:{if $min!=true} {/if}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}ok:1{literal}}{/literal});{if $min!=true}        
+        {/if}else{if $min!=true}        
+            {/if}$.post(this.r+'{$method.name}',{if $min!=true} {/if}{literal}{{/literal}{foreach from=$method.args item=arg}{$arg.parameterName}:{if $min!=true} {/if}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}ok:1{literal}}{/literal},{if $min!=true} {/if}{if $min!=true} 
+                {/if}function(r){literal}{{/literal}{if $min!=true}callback_function(r){else}cb(r){/if}{literal}}{/literal}{if $min!=true} 
+            {/if});{if $min!=true} 
     {/if}{literal}}{/literal},{if $min!=true} 
 {/if}{/foreach}{if $min!=true}  {/if}'ok':1{if $min!=true} 
 {/if}{literal}}{/literal};
