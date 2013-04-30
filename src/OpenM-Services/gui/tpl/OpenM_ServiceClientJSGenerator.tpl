@@ -11,14 +11,14 @@ var {$api}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{if $mi
             {/if}url:{if $min!=true} {/if}this.r+'{$method.name}',{if $min!=true} 
             {/if}dataType:{if $min!=true} {/if}"json"{if $min!=true} 
         {/if}{literal}}{/literal};{if $min!=true} 
-        {/if}var {if $min!=true}data{else}d{/if}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{foreach from=$method.args item=arg}{$arg.parameterName}:{if $min!=true} {/if}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}ok:1{literal}}{/literal}{if $min!=true} 
+        {/if}var {if $min!=true}data{else}d{/if}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{foreach from=$method.args item=arg}{$arg.parameterName}:{if $min!=true} {/if}{if $min!=true}{$arg.name}{else}{$arg.parameterName|replace:'arg':'c'}{/if},{if $min!=true} {/if}{/foreach}ok:1{literal}}{/literal};{if $min!=true} 
         {/if}$.each({if $min!=true}data{else}d{/if},{if $min!=true} {/if}function(k,v){literal}{{/literal}{if $min!=true} 
             {/if}if(typeof(v){if $min!=true} {/if}=={if $min!=true} {/if}"function"){literal}{{/literal}{if $min!=true} 
                 {/if}{if $min!=true}callback_function{else}cb{/if}{if $min!=true} {/if}={if $min!=true} {/if}v;{if $min!=true} 
-                {/if}return{if $min!=true} {/if}false;{if $min!=true} 
+                {/if}return false;{if $min!=true} 
             {/if}{literal}}{/literal}{if $min!=true} 
             {/if}{if $min!=true}ajax{else}a{/if}.data[k]{if $min!=true} {/if}={if $min!=true} {/if}v;{if $min!=true} 
-        {/if}{literal}}{/literal}){if $min!=true} 
+        {/if}{literal}}{/literal});{if $min!=true} 
         {/if}if({if $min!=true}callback_function{else}cb{/if}===undefined){literal}{{/literal}{if $min!=true} 
             {/if}{if $min!=true}ajax{else}a{/if}.async{if $min!=true} {/if}={if $min!=true} {/if}false;{if $min!=true} 
             {/if}var r;{if $min!=true} 
