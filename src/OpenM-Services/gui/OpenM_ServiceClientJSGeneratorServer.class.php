@@ -27,74 +27,82 @@ class OpenM_ServiceClientJSGeneratorServer {
 
     const FILE_URL_PARAMETER = "api_gen";
     const MIN_MODE_PARAMETER = "min";
-    
+    const FILE_URL_SEPARATOR_PARAMETER = ";";
+
     private $root_path;
 
-    public static function display($api, $min = true, $root_path=null) {
-        if (!is_file("$api.interface.php"))
-            die("Forbidden display");
+    public static function display($apis, $min = true, $root_path = null) {
+        $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
+        $headerEnabled = false;
+        foreach ($files as $api) {
+            if (!is_file("$api.interface.php"))
+                die("Forbidden display");
 
-        if (!Import::php("$api"))
-            throw new ImportException("$api");
+            if (!Import::php("$api"))
+                throw new ImportException("$api");
 
-        $smarty = new Smarty();
+            $smarty = new Smarty();
 
-        $reflexion = new ReflectionClass("$api");
+            $reflexion = new ReflectionClass("$api");
 
-        $constants = $reflexion->getConstants();
-        $arrayConstants = array();
-        foreach ($constants as $name => $value) {
-            $arrayConstant = array();
-            $arrayConstant["name"] = $name;
-            $arrayConstant["value"] = $value;
-            $arrayConstants[] = $arrayConstant;
-        }
-
-        $smarty->assign("constants", $arrayConstants);
-
-        $methods = get_class_methods("$api");
-        $arrayMethods = array();
-
-        foreach ($methods as $method) {
-
-            $arrayMethod = array();
-            $arrayMethod["name"] = $method;
-
-            $r = new ReflectionMethod($api, $method);
-            $r->getParameters();
-            $i = 1;
-            $args = $r->getParameters();
-
-            $arrayParameters = array();
-
-            foreach ($args as $param) {
-                $arrayParameter = array();
-                $arrayParameter["name"] = $param->getName();
-                $arrayParameter["isOptional"] = $param->isOptional();
-                if ($param->isOptional())
-                    $arrayParameter["defaultValue"] = $param->getDefaultValue();
-                $arrayParameter["parameterName"] = "arg$i";
-                $arrayParameters["arg$i"] = $arrayParameter;
-                $i++;
+            $constants = $reflexion->getConstants();
+            $arrayConstants = array();
+            foreach ($constants as $name => $value) {
+                $arrayConstant = array();
+                $arrayConstant["name"] = $name;
+                $arrayConstant["value"] = $value;
+                $arrayConstants[] = $arrayConstant;
             }
 
-            $arrayMethod["args"] = $arrayParameters;
-            $arrayMethods[] = $arrayMethod;
-        }
+            $smarty->assign("constants", $arrayConstants);
 
-        $smarty->assign("methods", $arrayMethods);
-        $smarty->assign("api", "$api");
-        $smarty->assign("api_url", $root_path);
-        $smarty->assign("min", $min);
-        header('Content-type: text/javascript');
-        $smarty->display(__DIR__ . "/tpl/OpenM_ServiceClientJSGenerator.tpl");
-        exit();
+            $methods = get_class_methods("$api");
+            $arrayMethods = array();
+
+            foreach ($methods as $method) {
+
+                $arrayMethod = array();
+                $arrayMethod["name"] = $method;
+
+                $r = new ReflectionMethod($api, $method);
+                $r->getParameters();
+                $i = 1;
+                $args = $r->getParameters();
+
+                $arrayParameters = array();
+
+                foreach ($args as $param) {
+                    $arrayParameter = array();
+                    $arrayParameter["name"] = $param->getName();
+                    $arrayParameter["isOptional"] = $param->isOptional();
+                    if ($param->isOptional())
+                        $arrayParameter["defaultValue"] = $param->getDefaultValue();
+                    $arrayParameter["parameterName"] = "arg$i";
+                    $arrayParameters["arg$i"] = $arrayParameter;
+                    $i++;
+                }
+
+                $arrayMethod["args"] = $arrayParameters;
+                $arrayMethods[] = $arrayMethod;
+            }
+
+            $smarty->assign("methods", $arrayMethods);
+            $smarty->assign("api", "$api");
+            $smarty->assign("api_url", $root_path);
+            $smarty->assign("min", $min);
+
+            if (!$headerEnabled) {
+                header('Content-type: text/javascript');
+                $headerEnabled = true;
+            }
+            $smarty->display(__DIR__ . "/tpl/OpenM_ServiceClientJSGenerator.tpl");
+        }
     }
 
-    public function __construct($root_path=null) {
+    public function __construct($root_path = null) {
         $this->root_path = $root_path;
     }
-    
+
     public function handle() {
         if (isset($_GET[self::FILE_URL_PARAMETER])) {
             try {
