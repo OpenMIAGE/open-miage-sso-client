@@ -18,6 +18,15 @@
     background-color: white;
 }
 
+.OpenM_IDLoginClient-reconnectframe {
+    z-index: -1;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;    
+    width: 1px;
+    height: 1px;
+}
+
 .OpenM_IDLoginClient-close { 
     z-index: -1;
     position: absolute;

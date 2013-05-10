@@ -18,7 +18,21 @@ var OpenM_IDLoginClient = {
         $("html body").append(this.frame);
         var controller = this;
         this.launchWaitConnectionDaemon(function(){
-            controller.close();
+            controller.frame.remove();
+        });
+    },
+    'reconnectframe' : undefined,
+    'reconnect': function(callback_function){
+        this.connected = false;
+        this.reconnectframe = $(document.createElement("iframe"));
+        this.reconnectframe.attr("src", this.url+"?reconnect");
+        this.reconnectframe.addClass("OpenM_IDLoginClient-reconnectframe");
+        $("html body").append(this.reconnectframe);
+        var controller = this;
+        var callback = callback_function;
+        this.launchWaitConnectionDaemon(function(){
+            controller.reconnectframe.remove();
+            callback();
         });
     },
     'close': function(){
@@ -37,9 +51,9 @@ var OpenM_IDLoginClient = {
         }, function(data){
             if(data.isConnected!==undefined && data.isConnected==1){
                 controller.connected = true;
-                controller.checkWaitConnectionDaemon();
+                controller.callback_when_connected();
             }
-        }, "JSON");
+        }, "json");
         
         return false;
     },
@@ -48,26 +62,18 @@ var OpenM_IDLoginClient = {
     'callback_when_connected': undefined,
     'launchWaitConnectionDaemon': function(callback_when_connected){
         this.callback_when_connected = callback_when_connected;
-        var controller = this;
-        if(this.timer_daemon!==undefined)
-            window.clearTimeout(this.timer_daemon);
-        this.timer_daemon = setTimeout(function(){
-            controller.checkWaitConnectionDaemon()
-        }, this.timer_interval);
-        this.isConnected();
+        this.checkWaitConnectionDaemon();
     },
     'checkWaitConnectionDaemon': function(){
-        if(this.callback_when_connected != undefined){
-            if(this.isConnected())
-                this.callback_when_connected();
-            else{
-                var controller = this;
-                if(this.timer_daemon!==undefined)
-                    window.clearTimeout(this.timer_daemon);
-                this.timer_daemon = setTimeout(function(){
-                    controller.checkWaitConnectionDaemon()
-                }, this.timer_interval);
-            }
+        if(this.isConnected())
+            this.callback_when_connected();
+        else{
+            var controller = this;
+            if(this.timer_daemon!==undefined)
+                window.clearTimeout(this.timer_daemon);
+            this.timer_daemon = setTimeout(function(){
+                controller.checkWaitConnectionDaemon()
+            }, this.timer_interval);
         }
     }
 }

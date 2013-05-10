@@ -13,6 +13,7 @@ class OpenM_IDLoginClientServer {
     private $embeded;
 
     const IS_CONNECTED_PARAMETER = "isConnected";
+    const RECONNECT = "reconnect";
 
     public function __construct($config_file_path, $embede = true) {
         $this->config_file_path = $config_file_path;
@@ -27,7 +28,7 @@ class OpenM_IDLoginClientServer {
 
         if ($this->embeded)
             $sso->setEmbeded();
-        $sso->login();
+        $sso->login(null, isset($_GET[self::RECONNECT]));
         if ($sso->isConnected())
             echo "you're connected";
         else
