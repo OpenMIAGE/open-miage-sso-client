@@ -32,7 +32,8 @@ var OpenM_IDLoginClient = {
         var callback = callback_function;
         this.launchWaitConnectionDaemon(function(){
             controller.reconnectframe.remove();
-            callback();
+            if(callback!==undefined)
+                callback();
         });
     },
     'close': function(){
@@ -51,7 +52,8 @@ var OpenM_IDLoginClient = {
         }, function(data){
             if(data.isConnected!==undefined && data.isConnected==1){
                 controller.connected = true;
-                controller.callback_when_connected();
+                if(controller.callback_when_connected!==undefined)
+                    controller.callback_when_connected();
             }
         }, "json");
         
