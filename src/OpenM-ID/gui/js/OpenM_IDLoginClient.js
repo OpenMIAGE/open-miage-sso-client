@@ -5,10 +5,10 @@ var OpenM_IDLoginClient = {
     'open': function(){
         if(this.connected)
             return;
-        this.frame = $("<div id='OpenM_IDLoginClient-frame'></div>");
+        this.frame = $(document.createElement('div')).attr("id",'OpenM_IDLoginClient-frame');
         this.frame.addClass("hero-unit OpenM_IDLoginClient-frame");
-        var iframe = $("<iframe id='OpenM_IDLoginClient-iframe' src='"+this.url+"'></iframe>");
-        var close = $('<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>');
+        var iframe = $(document.createElement("iframe")).attr("id", 'OpenM_IDLoginClient-iframe').attr("src", this.url);
+        var close = $(document.createElement("button")).attr("type", "button").addClass("close").attr("data-dismiss","modal").attr("aria-hidden", true).append("&times;");
         close.addClass("OpenM_IDLoginClient-close");
         close.attr("onclick", "OpenM_IDLoginClient.close();return false;");
         this.frame.append(close);

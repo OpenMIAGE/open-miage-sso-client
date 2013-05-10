@@ -19,9 +19,8 @@
 }
 
 .OpenM_IDLoginClient-reconnectframe {
-    z-index: -1;
     position: absolute;
-    left: 0px;
+    right: 0px;
     bottom: 0px;    
     width: 1px;
     height: 1px;
