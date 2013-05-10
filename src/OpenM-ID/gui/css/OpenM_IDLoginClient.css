@@ -1,0 +1,49 @@
+.OpenM_IDLoginClient-frame {
+    z-index: -1;
+    position: absolute;
+    left: 50%;
+    top: 50%;    
+    width: 450px;
+    height: 340px;
+    margin-left: -225px;
+    margin-top: -170px;
+    padding: 15px;
+    border: 1px solid #e5e5e5;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 5px 5px 5px #888;
+    -moz-box-shadow: 5px 5px 5px #888;
+    box-shadow: 5px 5px 5px #888;
+    background-color: white;
+}
+
+.OpenM_IDLoginClient-reconnectframe {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;    
+    width: 1px;
+    height: 1px;
+    border: 0px;
+    background-color: transparent;
+}
+
+.OpenM_IDLoginClient-close { 
+    z-index: -1;
+    position: absolute;
+    left: 50%;
+    top : 50%;
+    background-color: black;
+    width: 17px;
+    height: 17px;
+    margin-left: 210px;
+    margin-top: -173px;
+}
+
+.OpenM_IDLoginClient-iframe {
+    overflow-x: hidden;        
+    overflow-y: hidden;
+    margin: 10px;
+    width: 430px;
+    height: 320px;    
+}

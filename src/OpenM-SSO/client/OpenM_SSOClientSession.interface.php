@@ -103,6 +103,11 @@ interface OpenM_SSOClientSession {
      * connection OK else empty
      */
     public function getToken();
+    
+    /**
+     * set URL redirection target to embeded view of OpenM-ID
+     */
+    public function setEmbeded();
 }
 
 ?>

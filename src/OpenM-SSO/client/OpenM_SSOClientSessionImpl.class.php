@@ -51,6 +51,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
     private $sso_api_path;
     private $isLogoutInProgress;
     private $connectedAtLeastOneTimeBefore = false;
+    private $embeded = false;
 
     /**
      * Initialize session with api (no connection, only initializing local properties).
@@ -216,7 +217,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
 
         if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_START) {
             OpenM_Log::debug("load OID", __CLASS__, __METHOD__, __LINE__);
-            $this->OID = $this->OpenIDClient->get($redirectToLoginIfNotConnected);
+            $this->OID = $this->OpenIDClient->get($redirectToLoginIfNotConnected, $this->embeded);
             $this->OpenIdConnectionStatus = self::STATUS_OpenID_GET;
         }
 
@@ -439,6 +440,10 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
 
     public function getAPIpath() {
         return $this->sso_api_path . "";
+    }
+
+    public function setEmbeded() {
+        $this->embeded = true;
     }
 
 }

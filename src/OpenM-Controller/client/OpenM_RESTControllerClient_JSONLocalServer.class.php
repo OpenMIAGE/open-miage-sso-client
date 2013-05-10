@@ -4,6 +4,8 @@ Import::php("OpenM-Controller.client.OpenM_RESTControllerClient");
 Import::php("util.http.OpenM_URL");
 Import::php("util.HashtableString");
 Import::php("util.OpenM_Log");
+Import::php("OpenM-Services.client.OpenM_ServiceSSOClientImpl");
+Import::php("OpenM-SSO.client.OpenM_SSOSession");
 
 /**
  * OpenM_RESTControllerClient_JSONLocalServer localy reproduce remote api access.
@@ -61,8 +63,15 @@ class OpenM_RESTControllerClient_JSONLocalServer {
             else
                 break;
         }
-
-        echo OpenM_RESTControllerClient::call($this->api_path, $api, $method, $args, $this->sso, true);
+        
+        try {
+            echo OpenM_RESTControllerClient::call($this->api_path, $api, $method, $args, $this->sso, true);
+        } catch (Exception $e) {
+            die(OpenM_MapConvertor::arrayToJSON(array(
+                        OpenM_Service::RETURN_ERROR_PARAMETER => "",
+                        OpenM_Service::RETURN_ERROR_MESSAGE_PARAMETER => $e->getMessage()
+                    )));
+        }
     }
 
 }
