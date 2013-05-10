@@ -25,6 +25,8 @@
     bottom: 0px;    
     width: 1px;
     height: 1px;
+    border: 0px;
+    background-color: transparent;
 }
 
 .OpenM_IDLoginClient-close { 
