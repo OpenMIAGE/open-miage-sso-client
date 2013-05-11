@@ -1,5 +1,5 @@
 .OpenM_IDLoginClient-frame {
-    z-index: -1;
+    z-index: 999999;
     position: absolute;
     left: 50%;
     top: 50%;    
@@ -29,7 +29,7 @@
 }
 
 .OpenM_IDLoginClient-close { 
-    z-index: -1;
+    z-index: 999998;
     position: absolute;
     left: 50%;
     top : 50%;

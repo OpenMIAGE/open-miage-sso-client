@@ -373,6 +373,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         $realm = $this->realm;
         $version = $this->version;
         $connectedAtLeastOneTimeBefore = $this->connectedAtLeastOneTimeBefore;
+        $embeded = $this->embeded;
         $array = get_object_vars($this);
         foreach ($array as $attrName => $value)
             $this->$attrName = null;
@@ -382,6 +383,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         $this->realm = $realm;
         $this->version = $version;
         $this->connectedAtLeastOneTimeBefore = $connectedAtLeastOneTimeBefore;
+        $this->embeded = $embeded;
     }
 
     public function getProperties() {
