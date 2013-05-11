@@ -56,18 +56,18 @@ var OpenM_SSOClientConnectionManager = {
         if(this.timer_daemon!==undefined)
             window.clearTimeout(this.timer_daemon);
     },
-    'isConnected': function(callBack_when_connected, synchro){
+    'isConnected': function(callBack, synchro){
         if(this.connected){
             if(this.frame!=undefined)
                 this.frame.remove();
-            if(callBack_when_connected!==undefined)
-                callBack_when_connected();
+            if(callBack!==undefined)
+                callBack();
             return true;
         }        
         var controller = this;
         if(synchro===undefined)
             synchro = false;
-        var callback = callBack_when_connected;
+        var callBackFunction = callBack;
         var ajax = {
             async: !synchro,
             type: 'POST', 
@@ -78,9 +78,9 @@ var OpenM_SSOClientConnectionManager = {
                 if(data[controller.RETURN_IS_CONNECTED_PARAMETER]==1){
                     controller.connected = true;
                     controller.alreadyHaveConnectionOK = true;
-                    if(callback!==undefined)
-                        callback();
                 }
+                if(callBackFunction!==undefined)
+                    callBackFunction();
             }
         };
         ajax.data[this.ACTION_PARAMETER] = this.IS_CONNECTED_ACTION;
@@ -97,9 +97,11 @@ var OpenM_SSOClientConnectionManager = {
     'checkWaitConnectionDaemon': function(){
         var controller = this;
         if(this.isConnected(function(){
-            if(controller.timer_daemon!==undefined)
-                window.clearTimeout(controller.timer_daemon);
-            controller.callback_when_connected();
+            if(OpenM_SSOClientConnectionManager.connected){
+                if(controller.timer_daemon!==undefined)
+                    window.clearTimeout(controller.timer_daemon);
+                controller.callback_when_connected();
+            }
         })){
             return;
         }
@@ -126,9 +128,11 @@ var OpenM_SSOClientConnectionManager = {
     'checkWaitReConnectionDaemon': function(){
         var controller = this;
         if(this.isConnected(function(){
-            if(controller.timer_daemon_reconnection!==undefined)
-                window.clearTimeout(controller.timer_daemon_reconnection);
-            controller.callback_when_reconnected();
+            if(OpenM_SSOClientConnectionManager.connected){
+                if(controller.timer_daemon_reconnection!==undefined)
+                    window.clearTimeout(controller.timer_daemon_reconnection);
+                controller.callback_when_reconnected();
+            }
         })){            
             return;
         }
