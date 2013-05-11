@@ -7,7 +7,7 @@ Import::php("OpenM-SSO.client.OpenM_SSOClientPoolSessionManager");
  * 
  * @author Gaël Saunier
  */
-class OpenM_IDLoginClientServer {
+class OpenM_SSOClientConnectionManagerServer {
 
     private $config_file_path;
     private $embeded;

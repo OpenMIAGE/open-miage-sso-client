@@ -1,4 +1,4 @@
-var OpenM_IDLoginClient = {
+var OpenM_SSOClientConnectionManager = {
     'url': '',    
     'session_mode': '',
     'api_selected': '',
@@ -44,7 +44,7 @@ var OpenM_IDLoginClient = {
         $("html body").append(this.reconnectframe);
         var controller = this;
         var callback = callback_function;
-        this.launchWaitConnectionDaemon(function(){
+        this.launchWaitReConnectionDaemon(function(){
             controller.reconnectframe.remove();
             if(callback!==undefined)
                 callback();
@@ -56,17 +56,18 @@ var OpenM_IDLoginClient = {
         if(this.timer_daemon!==undefined)
             window.clearTimeout(this.timer_daemon);
     },
-    'isConnected': function(synchro){
+    'isConnected': function(callBack_when_connected, synchro){
         if(this.connected){
             if(this.frame!=undefined)
                 this.frame.remove();
+            if(callBack_when_connected!==undefined)
+                callBack_when_connected();
             return true;
-        }
-        
+        }        
         var controller = this;
         if(synchro===undefined)
             synchro = false;
-        
+        var callback = callBack_when_connected;
         var ajax = {
             async: !synchro,
             type: 'POST', 
@@ -77,13 +78,12 @@ var OpenM_IDLoginClient = {
                 if(data[controller.RETURN_IS_CONNECTED_PARAMETER]==1){
                     controller.connected = true;
                     controller.alreadyHaveConnectionOK = true;
-                    if(controller.callback_when_connected!==undefined)
-                        controller.callback_when_connected();
+                    if(callback!==undefined)
+                        callback();
                 }
             }
         };
         ajax.data[this.ACTION_PARAMETER] = this.IS_CONNECTED_ACTION;
-        
         $.ajax(ajax);
         return this.connected;
     },
@@ -95,14 +95,48 @@ var OpenM_IDLoginClient = {
         this.checkWaitConnectionDaemon();
     },
     'checkWaitConnectionDaemon': function(){
-        if(this.isConnected())
-            this.callback_when_connected();
+        var controller = this;
+        if(this.isConnected(function(){
+            if(controller.timer_daemon!==undefined)
+                window.clearTimeout(controller.timer_daemon);
+            controller.callback_when_connected();
+        })){
+            return;
+        }
         else{
-            var controller = this;
             if(this.timer_daemon!==undefined)
                 window.clearTimeout(this.timer_daemon);
             this.timer_daemon = setTimeout(function(){
                 controller.checkWaitConnectionDaemon()
+            }, this.timer_interval);
+        }
+    },
+    'timer_daemon_reconnection': null,
+    'timer_interval_reconnection': 4000,
+    'callback_when_reconnected': undefined,
+    'launchWaitReConnectionDaemon': function(callback_when_reconnected){
+        this.callback_when_reconnected = callback_when_reconnected;
+        var controller = this;
+        if(this.timer_daemon_reconnection!==undefined)
+            window.clearTimeout(controller.timer_daemon_reconnection);
+        this.timer_daemon_reconnection = setTimeout(function(){
+            controller.checkWaitReConnectionDaemon()
+        }, this.timer_interval_reconnection);
+    },
+    'checkWaitReConnectionDaemon': function(){
+        var controller = this;
+        if(this.isConnected(function(){
+            if(controller.timer_daemon_reconnection!==undefined)
+                window.clearTimeout(controller.timer_daemon_reconnection);
+            controller.callback_when_reconnected();
+        })){            
+            return;
+        }
+        else{
+            if(this.timer_daemon_reconnection!==undefined)
+                window.clearTimeout(controller.timer_daemon_reconnection);
+            this.timer_daemon_reconnection = setTimeout(function(){
+                controller.checkWaitReConnectionDaemon()
             }, this.timer_interval);
         }
     }
