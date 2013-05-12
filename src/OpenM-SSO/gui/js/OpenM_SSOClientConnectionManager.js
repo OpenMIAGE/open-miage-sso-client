@@ -57,13 +57,6 @@ var OpenM_SSOClientConnectionManager = {
             window.clearTimeout(this.timer_daemon);
     },
     'isConnected': function(callBack, synchro){
-        if(this.connected){
-            if(this.frame!=undefined)
-                this.frame.remove();
-            if(callBack!==undefined)
-                callBack();
-            return true;
-        }        
         var controller = this;
         if(synchro===undefined)
             synchro = false;
