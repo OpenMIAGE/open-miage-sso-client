@@ -181,15 +181,17 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
     }
 
     public function login($properties = null, $force = false) {
+        if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_CONNECTED && $this->isLoginInProcess) {
+            $this->isLoginInProcess = false;
+            OpenM_Log::debug("end of login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
+            return $this->getProperties();
+        }
         OpenM_Log::debug("login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
         if (($force || $this->OpenIdConnectionStatus == self::STATUS_OpenID_NOT_CONNECTED) && !$this->isLoginInProcess) {
             $this->init();
             $this->isLoginInProcess = true;
         }
-        $return = $this->checkAuth($properties, true);
-        $this->isLoginInProcess = false;
-        OpenM_Log::debug("end of login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
-        return $return;
+        return $this->checkAuth($properties, true);
     }
 
     public function checkAuth($properties = null, $redirectToLoginIfNotConnected = false, $optimisticMode = true, $isSSOapiActivated = true) {
@@ -338,8 +340,9 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         OpenM_Log::debug("OpenM-ID successfuly connected", __CLASS__, __METHOD__, __LINE__);
         $this->OpenIdConnectionStatus = self::STATUS_OpenID_CONNECTED;
 
-        if ($this->uri != null && $this->uri != "")
+        if ($this->uri != null && $this->uri != "") {
             OpenM_Header::redirect($this->uri);
+        }
     }
 
     public function logout($redirectToLogin = false) {
