@@ -22,7 +22,7 @@ var OpenM_SSOClientConnectionManager = {
         var iframe = $(document.createElement("iframe")).attr("id", 'OpenM_IDLoginClient-iframe').attr("src", this.url+"?"+this.MODE_PARAMETER+"="+this.session_mode+"&"+this.API_SELECTION_PARAMETER+"="+this.api_selected);
         var close = $(document.createElement("button")).attr("type", "button").addClass("close").attr("data-dismiss","modal").attr("aria-hidden", true).append("&times;");
         close.addClass("OpenM_IDLoginClient-close");
-        close.attr("onclick", "OpenM_IDLoginClient.close();return false;");
+        close.attr("onclick", "OpenM_SSOClientConnectionManager.close();return false;");
         this.frame.append(close);
         iframe.addClass("OpenM_IDLoginClient-iframe");
         iframe.attr("frameborder",0);
@@ -37,15 +37,24 @@ var OpenM_SSOClientConnectionManager = {
     'reconnect': function(callback_function){
         if(!this.alreadyHaveConnectionOK)
             return;
+        if(this.isReconnectionInProgress)
+            return;
         this.connected = false;
+        this.isReconnectionInProgress = true;
         this.reconnectframe = $(document.createElement("iframe"));
         this.reconnectframe.attr("src", this.url+"?"+this.MODE_PARAMETER+"="+this.session_mode+"&"+this.API_SELECTION_PARAMETER+"="+this.api_selected);
         this.reconnectframe.addClass("OpenM_IDLoginClient-reconnectframe");
         $("html body").append(this.reconnectframe);
         var controller = this;
         var callback = callback_function;
+        setTimeout(function(){
+            controller.clearReconnection();
+            if(callback!==undefined)
+                callback();
+        },this.timeOutOfReconnection);
         this.launchWaitReConnectionDaemon(function(){
             controller.reconnectframe.remove();
+            controller.isReconnectionInProgress = false;
             if(callback!==undefined)
                 callback();
         });
@@ -107,13 +116,12 @@ var OpenM_SSOClientConnectionManager = {
         }
     },
     'timer_daemon_reconnection': null,
-    'timer_interval_reconnection': 4000,
+    'timer_interval_reconnection': 3000,
     'callback_when_reconnected': undefined,
     'launchWaitReConnectionDaemon': function(callback_when_reconnected){
         this.callback_when_reconnected = callback_when_reconnected;
         var controller = this;
-        if(this.timer_daemon_reconnection!==undefined)
-            window.clearTimeout(controller.timer_daemon_reconnection);
+        this.clearTimerReconnection();
         this.timer_daemon_reconnection = setTimeout(function(){
             controller.checkWaitReConnectionDaemon()
         }, this.timer_interval_reconnection);
@@ -122,19 +130,31 @@ var OpenM_SSOClientConnectionManager = {
         var controller = this;
         if(this.isConnected(function(){
             if(OpenM_SSOClientConnectionManager.connected){
-                if(controller.timer_daemon_reconnection!==undefined)
-                    window.clearTimeout(controller.timer_daemon_reconnection);
+                controller.clearTimerReconnection();
                 controller.callback_when_reconnected();
             }
         })){            
             return;
         }
         else{
-            if(this.timer_daemon_reconnection!==undefined)
-                window.clearTimeout(controller.timer_daemon_reconnection);
+            this.clearTimerReconnection();
             this.timer_daemon_reconnection = setTimeout(function(){
                 controller.checkWaitReConnectionDaemon()
             }, this.timer_interval);
         }
+    },
+    'isReconnectionInProgress': false,
+    'timeOutOfReconnection': 60000,
+    'timeOutOfReconnectionTimer': undefined,
+    'clearTimerReconnection': function(){
+        if(this.timer_daemon_reconnection!==undefined)
+            window.clearTimeout(this.timer_daemon_reconnection);
+    },
+    'clearReconnection': function(){
+        this.clearTimerReconnection();
+        if(this.timeOutOfReconnectionTimer!==undefined)
+            window.clearTimeout(this.timeOutOfReconnectionTimer);
+        this.reconnectframe.remove();
+        this.isReconnectionInProgress = false;
     }
 }

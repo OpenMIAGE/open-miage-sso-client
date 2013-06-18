@@ -422,7 +422,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         if ($this->isSSOapiActivated())
             return $this->isSSOapiConnectionOK($optimisticMode);
 
-        if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_CONNECTED) {
+        if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_CONNECTED && !$this->isLoginInProcess) {
             OpenM_Log::debug("response => yes", __CLASS__, __METHOD__, __LINE__);
             return true;
         }
