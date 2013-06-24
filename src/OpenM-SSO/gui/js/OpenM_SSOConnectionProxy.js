@@ -1,4 +1,4 @@
-var OpenM_SSOClientConnectionManager = {
+var OpenM_SSOConnectionProxy = {
     'url': '',    
     'session_mode': '',
     'api_selected': '',
@@ -16,21 +16,10 @@ var OpenM_SSOClientConnectionManager = {
     'open': function(){
         if(this.connected)
             return;
-        this.close();
-        this.frame = $(document.createElement('div')).attr("id",'OpenM_IDLoginClient-frame');
-        this.frame.addClass("hero-unit OpenM_IDLoginClient-frame");
-        var iframe = $(document.createElement("iframe")).attr("id", 'OpenM_IDLoginClient-iframe').attr("src", this.url+"?"+this.MODE_PARAMETER+"="+this.session_mode+"&"+this.API_SELECTION_PARAMETER+"="+this.api_selected);
-        var close = $(document.createElement("button")).attr("type", "button").addClass("close").attr("data-dismiss","modal").attr("aria-hidden", true).append("&times;");
-        close.addClass("OpenM_IDLoginClient-close");
-        close.attr("onclick", "OpenM_SSOClientConnectionManager.close();return false;");
-        this.frame.append(close);
-        iframe.addClass("OpenM_IDLoginClient-iframe");
-        iframe.attr("frameborder",0);
-        this.frame.append(iframe);
-        $("html body").append(this.frame);
+        this.frame = window.open(this.url+"?"+this.MODE_PARAMETER+"="+this.session_mode+"&"+this.API_SELECTION_PARAMETER+"="+this.api_selected, "popup", "toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, width=450, height=350,screenX=200,screenY=200");
         var controller = this;
         this.launchWaitConnectionDaemon(function(){
-            controller.frame.remove();
+            controller.frame.close();
         });
     },
     'reconnectframe' : undefined,
@@ -43,7 +32,13 @@ var OpenM_SSOClientConnectionManager = {
         this.isReconnectionInProgress = true;
         this.reconnectframe = $(document.createElement("iframe"));
         this.reconnectframe.attr("src", this.url+"?"+this.MODE_PARAMETER+"="+this.session_mode+"&"+this.API_SELECTION_PARAMETER+"="+this.api_selected);
-        this.reconnectframe.addClass("OpenM_IDLoginClient-reconnectframe");
+        this.reconnectframe.attr("position","absolute");
+        this.reconnectframe.attr("right",0);
+        this.reconnectframe.attr("bottom",0);
+        this.reconnectframe.attr("width",1);
+        this.reconnectframe.attr("height",1);
+        this.reconnectframe.attr("border",0);
+        this.reconnectframe.attr("background-color","transparent");    
         $("html body").append(this.reconnectframe);
         var controller = this;
         var callback = callback_function;
@@ -61,7 +56,7 @@ var OpenM_SSOClientConnectionManager = {
     },
     'close': function(){
         if(this.frame!=undefined)
-            this.frame.remove();
+            this.frame.close();
         if(this.timer_daemon!==undefined)
             window.clearTimeout(this.timer_daemon);
     },
@@ -99,7 +94,7 @@ var OpenM_SSOClientConnectionManager = {
     'checkWaitConnectionDaemon': function(){
         var controller = this;
         if(this.isConnected(function(){
-            if(OpenM_SSOClientConnectionManager.connected){
+            if(controller.connected){
                 if(controller.timer_daemon!==undefined)
                     window.clearTimeout(controller.timer_daemon);
                 controller.callback_when_connected();
@@ -129,7 +124,7 @@ var OpenM_SSOClientConnectionManager = {
     'checkWaitReConnectionDaemon': function(){
         var controller = this;
         if(this.isConnected(function(){
-            if(OpenM_SSOClientConnectionManager.connected){
+            if(controller.connected){
                 controller.clearTimerReconnection();
                 controller.callback_when_reconnected();
             }
