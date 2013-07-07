@@ -33,7 +33,10 @@ class OpenM_APIProxy_JSGeneratorServer {
 
     public static function display($apis, $min = true, $root_path = null) {
         $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
-        $headerEnabled = false;
+        header('Content-type: text/javascript');
+        $smarty = new Smarty();
+        $smarty->assign("min", $min);
+        $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_SSOErrorManager.tpl");
         foreach ($files as $api) {
             if (!is_file("$api.interface.php"))
                 die("Forbidden display");
@@ -90,11 +93,6 @@ class OpenM_APIProxy_JSGeneratorServer {
             $smarty->assign("api", "$api");
             $smarty->assign("api_url", $root_path);
             $smarty->assign("min", $min);
-
-            if (!$headerEnabled) {
-                header('Content-type: text/javascript');
-                $headerEnabled = true;
-            }
             $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl");
         }
     }
