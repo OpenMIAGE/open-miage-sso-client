@@ -1,16 +1,16 @@
  * client Changes
-  * OpenM_RESTControllerClient_JSONLocalServer no manage properly call exception
-    by using OpenM_ServiceSSOClientImpl. return JSON error with generated error.
+  * OpenM_REST_APIProxy now manage properly call exception
+    by using OpenM_ServiceSSOClientImpl return JSON error with generated error.
  
  * adds
-  * OpenM-Services.gui.OpenM_ServiceClientJSGeneratorServer generate API
+  * OpenM-Services.gui.OpenM_APIProxy_JSGeneratorServer generate API
     JavaScript client (manage synchornous and asynchronous calling) to call
-    api from javascript (has to be used with a OpenM_RESTControllerClient_JSONLocalServer).
-  * OpenM-ID.client.OpenM_IDLoginClientServer is a OpenM-ID server Proxy
-    with JavaScript client: OpenM-ID.gui.js.OpenM_IDLoginClient to connect with OpenM-ID
-    and reconnect on connection lost.
+    api from javascript (has to be used with an OpenM_REST_APIProxy).
+  * OpenM-SSO.client.OpenM_SSOClientConnectionManagerServer is an OpenM-ID server Proxy
+    with JavaScript client: OpenM-SSO.gui.js.gui.js.OpenM_SSOConnectionProxy.js
+    to connect with OpenM-ID and reconnect on connection lost.
 
  * libraries Changes
-  * update util to 1.0.15 version
-  * update openid by name version 2.0.2001 to be compliant with util 1.0.13 
+  * update util to 1.0.19 version
+  * update openid by name version 2.0.2001 to be compliant since util 1.0.13 
     new conflict management version

@@ -1,4 +1,4 @@
 <?php
 
-require_once 'OpenM_ServiceClientJSGeneratorServer_test.php';
+require_once 'OpenM_APIProxy_JSGeneratorServer_test.php';
 ?>

@@ -23,7 +23,7 @@ if (!Import::php("Smarty"))
  * @link http://www.open-miage.org
  * @author Gael Saunier
  */
-class OpenM_ServiceClientJSGeneratorServer {
+class OpenM_APIProxy_JSGeneratorServer {
 
     const FILE_URL_PARAMETER = "api_gen";
     const MIN_MODE_PARAMETER = "min";
@@ -95,7 +95,7 @@ class OpenM_ServiceClientJSGeneratorServer {
                 header('Content-type: text/javascript');
                 $headerEnabled = true;
             }
-            $smarty->display(__DIR__ . "/tpl/OpenM_ServiceClientJSGenerator.tpl");
+            $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl");
         }
     }
 
