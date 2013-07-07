@@ -36,7 +36,7 @@ class OpenM_APIProxy_JSGeneratorServer {
         header('Content-type: text/javascript');
         $smarty = new Smarty();
         $smarty->assign("min", $min);
-        $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_SSOErrorManager.tpl");
+        $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_AJAXController.tpl");
         foreach ($files as $api) {
             if (!is_file("$api.interface.php"))
                 die("Forbidden display");
