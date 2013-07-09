@@ -106,7 +106,7 @@ var OpenM_SSOConnectionProxy = {
             if(this.timer_daemon!==undefined)
                 window.clearTimeout(this.timer_daemon);
             this.timer_daemon = setTimeout(function(){
-                controller.checkWaitConnectionDaemon()
+                controller.checkWaitConnectionDaemon();
             }, this.timer_interval);
         }
     },
@@ -118,7 +118,7 @@ var OpenM_SSOConnectionProxy = {
         var controller = this;
         this.clearTimerReconnection();
         this.timer_daemon_reconnection = setTimeout(function(){
-            controller.checkWaitReConnectionDaemon()
+            controller.checkWaitReConnectionDaemon();
         }, this.timer_interval_reconnection);
     },
     'checkWaitReConnectionDaemon': function(){
@@ -134,7 +134,7 @@ var OpenM_SSOConnectionProxy = {
         else{
             this.clearTimerReconnection();
             this.timer_daemon_reconnection = setTimeout(function(){
-                controller.checkWaitReConnectionDaemon()
+                controller.checkWaitReConnectionDaemon();
             }, this.timer_interval);
         }
     },
