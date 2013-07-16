@@ -35,8 +35,41 @@ class OpenM_APIProxy_JSGeneratorServer {
         $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
         header('Content-type: text/javascript');
         $smarty = new Smarty();
-        $smarty->assign("min", $min);
-        $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_AJAXController.tpl");
+        $smarty->caching = true;
+        $smarty->compile_check = false;
+        $fileName = __DIR__ . '/tpl/OpenM_APIProxy_AJAXController';
+        $id = $fileName . ".js" . "_" . filectime($fileName . ".js") . "_" . ($min ? "min" : "");
+        if ($smarty->isCached($fileName . ".tpl", $id))
+            $smarty->display($fileName . ".tpl", $id);
+        else {
+            $string = file_get_contents($fileName . ".js");
+            if ($min) {
+                $string = str_replace("= ", "=", $string);
+                $string = str_replace(" =", "=", $string);
+                $string = preg_replace('/\s+/', ' ', $string);
+                $string = str_replace("  ", " ", $string);
+                $string = str_replace("\r\n", "", $string);
+                $string = str_replace("\n", "", $string);
+                $string = str_replace(' (', "(", $string);
+                $string = str_replace('( ', "(", $string);
+                $string = str_replace(' )', ")", $string);
+                $string = str_replace(') ', ")", $string);
+                $string = str_replace(': ', ":", $string);
+                $string = str_replace(' :', ":", $string);
+                $string = str_replace('{ ', "{", $string);
+                $string = str_replace(' {', "{", $string);
+                $string = str_replace(' }', "}", $string);
+                $string = str_replace('} ', "}", $string);
+                $string = str_replace(' ;', ";", $string);
+                $string = str_replace('; ', ";", $string);
+            }
+            $smarty->assign("OpenM_APIProxy_AJAXController", $string);
+            $smarty->cache_id = $id;
+            $smarty->display($fileName . ".tpl");
+        }
+        
+        $display = __DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl";
+
         foreach ($files as $api) {
             if (!is_file("$api.interface.php"))
                 die("Forbidden display");
@@ -44,56 +77,61 @@ class OpenM_APIProxy_JSGeneratorServer {
             if (!Import::php("$api"))
                 throw new ImportException("$api");
 
-            $smarty = new Smarty();
-
             $reflexion = new ReflectionClass("$api");
+            $file = $reflexion->getFileName();
 
-            $constants = $reflexion->getConstants();
-            $arrayConstants = array();
-            foreach ($constants as $name => $value) {
-                $arrayConstant = array();
-                $arrayConstant["name"] = $name;
-                $arrayConstant["value"] = $value;
-                $arrayConstants[] = $arrayConstant;
-            }
+            $id = $file . filectime($file) . "_" . ($min ? "min" : "");
+            if ($smarty->isCached($display, $id))
+                $smarty->display($display, $id);
 
-            $smarty->assign("constants", $arrayConstants);
-
-            $methods = get_class_methods("$api");
-            $arrayMethods = array();
-
-            foreach ($methods as $method) {
-
-                $arrayMethod = array();
-                $arrayMethod["name"] = $method;
-
-                $r = new ReflectionMethod($api, $method);
-                $r->getParameters();
-                $i = 1;
-                $args = $r->getParameters();
-
-                $arrayParameters = array();
-
-                foreach ($args as $param) {
-                    $arrayParameter = array();
-                    $arrayParameter["name"] = $param->getName();
-                    $arrayParameter["isOptional"] = $param->isOptional();
-                    if ($param->isOptional())
-                        $arrayParameter["defaultValue"] = $param->getDefaultValue();
-                    $arrayParameter["parameterName"] = "arg$i";
-                    $arrayParameters["arg$i"] = $arrayParameter;
-                    $i++;
+            else {
+                $smarty->cache_id = $id;
+                $constants = $reflexion->getConstants();
+                $arrayConstants = array();
+                foreach ($constants as $name => $value) {
+                    $arrayConstant = array();
+                    $arrayConstant["name"] = $name;
+                    $arrayConstant["value"] = $value;
+                    $arrayConstants[] = $arrayConstant;
                 }
 
-                $arrayMethod["args"] = $arrayParameters;
-                $arrayMethods[] = $arrayMethod;
-            }
+                $smarty->assign("constants", $arrayConstants);
+                $methods = get_class_methods("$api");
+                $arrayMethods = array();
 
-            $smarty->assign("methods", $arrayMethods);
-            $smarty->assign("api", "$api");
-            $smarty->assign("api_url", $root_path);
-            $smarty->assign("min", $min);
-            $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl");
+                foreach ($methods as $method) {
+
+                    $arrayMethod = array();
+                    $arrayMethod["name"] = $method;
+
+                    $r = new ReflectionMethod($api, $method);
+                    $r->getParameters();
+                    $i = 1;
+                    $args = $r->getParameters();
+
+                    $arrayParameters = array();
+
+                    foreach ($args as $param) {
+                        $arrayParameter = array();
+                        $arrayParameter["name"] = $param->getName();
+                        $arrayParameter["isOptional"] = $param->isOptional();
+                        if ($param->isOptional())
+                            $arrayParameter["defaultValue"] = $param->getDefaultValue();
+                        $arrayParameter["parameterName"] = "arg$i";
+                        $arrayParameters["arg$i"] = $arrayParameter;
+                        $i++;
+                    }
+
+                    $arrayMethod["args"] = $arrayParameters;
+                    $arrayMethods[] = $arrayMethod;
+                }
+
+                $smarty->assign("methods", $arrayMethods);
+                $smarty->assign("api", "$api");
+                $smarty->assign("api_url", $root_path);
+                $smarty->assign("min", $min);
+                $smarty->display($display);
+            }
         }
     }
 
