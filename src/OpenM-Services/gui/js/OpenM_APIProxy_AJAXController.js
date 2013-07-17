@@ -1,15 +1,22 @@
 if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
     var OpenM_APIProxy_AJAXController = {
+        initialized: false,
         call: function(ajax) {
+            var c = this;
+            if (!this.initialized && typeof(OpenM_SSOConnectionProxy) !== 'undefined') {
+                OpenM_SSOConnectionProxy.addReconnectionOKListener(function() {
+                    c.reconnectionOK();
+                });
+                c.initialized = true;
+            }
             if (ajax === undefined)
                 return;
-            var c = this;
             var s = ajax.success;
             ajax.called = 0;
             if (ajax.initialized !== true) {
                 ajax.success = function(data) {
                     if (ajax.callingQueueId !== undefined)
-                        c.callingQueue[ajax.callingQueueId] = undefined;
+                        c.callingQueue.splice(ajax.callingQueueId, 1);
                     s(data);
                 };
                 ajax.error = function(data, type, error) {
@@ -65,14 +72,17 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
             }, c.waitingTime * 1000);
             c.onStatusChange(c.callingStatus, c.waitingTime);
             OpenM_SSOConnectionProxy.reconnect(function() {
-                c.callingStatus = c.STATUS_OK;
-                c.waitingTime = c.waitingTimeInit;
-                if (c.reconnectTimeOut !== undefined)
-                    clearTimeout(c.reconnectTimeOut);
-                c.onStatusChange(c.callingStatus);
-                c.recallAll();
+                c.reconnectionOK();
             });
             c.onStatusChange(c.STATUS_WAITING_RECONNECTION);
+        },
+        reconnectionOK: function() {
+            this.callingStatus = this.STATUS_OK;
+            this.waitingTime = this.waitingTimeInit;
+            if (this.reconnectTimeOut !== undefined)
+                clearTimeout(this.reconnectTimeOut);
+            this.onStatusChange(this.callingStatus);
+            this.recallAll();
         },
         recallAll: function() {
             var c = this;
@@ -81,7 +91,7 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
             $.each(c.callingQueue, function(key, value) {
                 if (value !== undefined && value.called !== undefined) {
                     if (value.called === c.maxNumberCall)
-                        c.callingQueue[key] = undefined;
+                        c.callingQueue.splice(key, 1);
                     else {
                         c.call(value);
                     }
