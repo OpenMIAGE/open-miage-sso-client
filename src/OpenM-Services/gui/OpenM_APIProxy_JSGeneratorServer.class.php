@@ -31,43 +31,64 @@ class OpenM_APIProxy_JSGeneratorServer {
 
     private $root_path;
 
+    private static function min($string) {
+        $string = str_replace("= ", "=", $string);
+        $string = str_replace(" =", "=", $string);
+        $string = preg_replace('/\s+/', ' ', $string);
+        $string = str_replace("  ", " ", $string);
+        $string = str_replace("\r\n", "", $string);
+        $string = str_replace("\n", "", $string);
+        $string = str_replace(' (', "(", $string);
+        $string = str_replace('( ', "(", $string);
+        $string = str_replace(' )', ")", $string);
+        $string = str_replace(') ', ")", $string);
+        $string = str_replace(': ', ":", $string);
+        $string = str_replace(' :', ":", $string);
+        $string = str_replace('{ ', "{", $string);
+        $string = str_replace(' {', "{", $string);
+        $string = str_replace(' }', "}", $string);
+        $string = str_replace('} ', "}", $string);
+        $string = str_replace(' ;', ";", $string);
+        $string = str_replace('; ', ";", $string);
+        $string = str_replace(' +', "+", $string);
+        $string = str_replace('+ ', "+", $string);
+        $string = str_replace(' -', "-", $string);
+        $string = str_replace('- ', "-", $string);
+        $string = str_replace(' ,', ",", $string);
+        $string = str_replace(', ', ",", $string);
+        return $string;
+    }
+
     public static function display($apis, $min = true, $root_path = null) {
         $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
         header('Content-type: text/javascript');
         $smarty = new Smarty();
         $smarty->caching = true;
         $smarty->compile_check = false;
-        $fileName = __DIR__ . '/tpl/OpenM_APIProxy_AJAXController';
-        $id = $fileName . ".js" . "_" . filectime($fileName . ".js") . "_" . ($min ? "min" : "");
-        if ($smarty->isCached($fileName . ".tpl", $id))
-            $smarty->display($fileName . ".tpl", $id);
+        $smarty->assign("min", $min);
+
+        $sso_proxy = Import::getAbsolutePath("OpenM-SSO/gui/js/OpenM_SSOConnectionProxy.js");
+        $api_proxy = Import::getAbsolutePath("OpenM-Services/gui/js/OpenM_APIProxy_AJAXController.js");
+        $tpl = Import::getAbsolutePath("OpenM-Services/gui/tpl/OpenM_APIProxy_Controller.tpl");
+        $id = "OpenM-SSO/gui/OpenM_SSOConnectionProxy.js_OpenM-Services/gui/js/OpenM_APIProxy_AJAXController.js"
+                . "_" . filectime($sso_proxy) . "_"
+                . filectime($api_proxy) . "_"
+                . ($min ? "min" : "");
+        if ($smarty->isCached($tpl, $id))
+            $smarty->display($tpl, $id);
         else {
-            $string = file_get_contents($fileName . ".js");
-            if ($min) {
-                $string = str_replace("= ", "=", $string);
-                $string = str_replace(" =", "=", $string);
-                $string = preg_replace('/\s+/', ' ', $string);
-                $string = str_replace("  ", " ", $string);
-                $string = str_replace("\r\n", "", $string);
-                $string = str_replace("\n", "", $string);
-                $string = str_replace(' (', "(", $string);
-                $string = str_replace('( ', "(", $string);
-                $string = str_replace(' )', ")", $string);
-                $string = str_replace(') ', ")", $string);
-                $string = str_replace(': ', ":", $string);
-                $string = str_replace(' :', ":", $string);
-                $string = str_replace('{ ', "{", $string);
-                $string = str_replace(' {', "{", $string);
-                $string = str_replace(' }', "}", $string);
-                $string = str_replace('} ', "}", $string);
-                $string = str_replace(' ;', ";", $string);
-                $string = str_replace('; ', ";", $string);
-            }
+            $string = file_get_contents($sso_proxy);
+            if ($min)
+                $string = self::min($string);
+            $smarty->assign("OpenM_SSOConnectionProxy", $string);
+            $string = file_get_contents($api_proxy);
+            if ($min)
+                $string = self::min($string);
             $smarty->assign("OpenM_APIProxy_AJAXController", $string);
             $smarty->cache_id = $id;
-            $smarty->display($fileName . ".tpl");
+            $smarty->display($tpl);
         }
-        
+
         $display = __DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl";
 
         foreach ($files as $api) {
@@ -129,7 +150,6 @@ class OpenM_APIProxy_JSGeneratorServer {
                 $smarty->assign("methods", $arrayMethods);
                 $smarty->assign("api", "$api");
                 $smarty->assign("api_url", $root_path);
-                $smarty->assign("min", $min);
                 $smarty->display($display);
             }
         }
