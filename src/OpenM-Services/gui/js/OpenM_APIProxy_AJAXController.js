@@ -1,6 +1,7 @@
 if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
     var OpenM_APIProxy_AJAXController = {
         initialized: false,
+        displayLoginFormIfNotConnected: true,
         call: function(ajax) {
             var c = this;
             if (!this.initialized && typeof(OpenM_SSOConnectionProxy) !== 'undefined') {
@@ -35,10 +36,18 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
             if (ajax.called === undefined)
                 return;
             var c = this;
-            if (type === 'parsererror')
+            if (type === 'parsererror') {
                 c.onError(c.INTERNAL_ERROR);
-            if (type === 'timeout')
+                if (typeof(ajax.callingQueueId) !== 'undefined')
+                    c.callingQueue.splice(ajax.callingQueueId, 1);
+            } else if (type === 'error' && typeof(error) === 'string' && error.search("ERRNO:-1") === -1) {
+                c.onError(c.INTERNAL_ERROR);
+                if (typeof(ajax.callingQueueId) !== 'undefined')
+                    c.callingQueue.splice(ajax.callingQueueId, 1);
+                return;
+            } else if (type === 'timeout')
                 c.onError(c.TIME_OUT);
+
             if (ajax.called === 0 || ajax.called === 1) {
                 if (ajax.errors === undefined)
                     ajax.errors = new Array();
@@ -71,9 +80,7 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
                 c.reconnect();
             }, c.waitingTime * 1000);
             c.onStatusChange(c.callingStatus, c.waitingTime);
-            OpenM_SSOConnectionProxy.reconnect(function() {
-                c.reconnectionOK();
-            });
+            OpenM_SSOConnectionProxy.reconnect(c.displayLoginFormIfNotConnected);
             c.onStatusChange(c.STATUS_WAITING_RECONNECTION);
         },
         reconnectionOK: function() {

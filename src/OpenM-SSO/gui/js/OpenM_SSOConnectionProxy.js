@@ -59,9 +59,12 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             }, c.waitingConnectionTimeOut * 1000);
         },
         reconnectframe: undefined,
-        reconnect: function(callback) {
-            if (!this.alreadyHaveConnectionOK)
+        reconnect: function(loginIfNotConnected) {
+            if (!this.alreadyHaveConnectionOK && loginIfNotConnected !== true)
                 return;
+            if (!this.alreadyHaveConnectionOK && loginIfNotConnected === true){
+                return this.open();
+            }
             if (this.waitingReConnectionInProgress)
                 return;
             this.connected = false;
@@ -76,7 +79,6 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             this.reconnectframe.attr("background-color", "transparent");
             $("html body").append(this.reconnectframe);
             var c = this;
-            var cb = callback;
             var t;
             c.waitingReConnectionInProgress = true;
             var i = setInterval(function() {
@@ -89,8 +91,6 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                             c.reconnectframe.remove();
                         c.waitingReConnectionInProgress = false;
                         c.onReconnectionOK();
-                        if (typeof(cb) === 'function')
-                            cb();
                     }
                 });
             }, c.waitingConnectionInterval);
@@ -133,7 +133,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         onReconnectionOK: function() {
             $.each(this.reconnectionOkListeners, function(key, value) {
                 if (typeof(value) === 'function')
-                    value(errno);
+                    value();
             });
         }
     };

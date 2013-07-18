@@ -21,7 +21,6 @@ class OpenM_SSOClientConnectionManagerServer {
     const SESSION_API_SELECTED = "OpenM_IDLoginClientServer_api_selected";
     const ACTION_PARAMETER = "ACTION";
     const IS_CONNECTED_ACTION = "isConnected";
-    const WAITING_CONNECTION = "waitingConnection";
     const RETURN_IS_CONNECTED_PARAMETER = self::IS_CONNECTED_ACTION;
 
     public function __construct($config_file_path, $embeded = true) {
@@ -31,9 +30,6 @@ class OpenM_SSOClientConnectionManagerServer {
     }
 
     public function handle() {
-        if (isset($_GET[self::WAITING_CONNECTION]))
-            return $this->waitingConnection();
-
         $manager = OpenM_SSOClientPoolSessionManager::fromFile($this->config_file_path);
         $mode = OpenM_SessionController::get(self::SESSION_MODE);
         OpenM_Log::debug("mode[session]: $mode", __CLASS__, __METHOD__, __LINE__);
@@ -102,23 +98,6 @@ class OpenM_SSOClientConnectionManagerServer {
                 $this->isConnectedDisplay($sso);
                 break;
         }
-    }
-
-    public function waitingConnection() {
-        if (!isset($_GET[self::API_SELECTION_PARAMETER]))
-            OpenM_Header::error(400, self::API_SELECTION_PARAMETER . " parameter missing");
-//        for ($i = 0; $i < 5; $i++) {
-            session_start();
-//            $manager = OpenM_SSOClientPoolSessionManager::fromFile($this->config_file_path);
-//            $sso = $manager->get($_GET[self::API_SELECTION_PARAMETER], false);
-//            if ($sso->isConnected()) {
-//                OpenM_Header::ok();
-//                exit();
-//            }
-            session_write_close();
-            sleep(10);
-//            session_write_close }
-        OpenM_Header::error(408, "timeOut");
     }
 
     public function isConnected($sso) {

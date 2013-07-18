@@ -12,8 +12,11 @@
                 OpenM_SSOConnectionProxy.url = "OpenM-ID.proxy/";
                 OpenM_SSOConnectionProxy.session_mode = OpenM_SSOConnectionProxy.MODE_API_SELECTION;
                 OpenM_SSOConnectionProxy.api_selected = "OpenM_Book";
-                OpenM_SSOConnectionProxy.timer_interval_reconnection = 2000;                
+                OpenM_SSOConnectionProxy.timer_interval_reconnection = 2000;
             </script>
+            <button style="width: 300px;height: 40px" onclick="OpenM_Book_User.getUserProperties(function() {
+                        alert('OK')
+                    });">OpenM_Book_User.getUserProperties()</button>
         </div>
 
     </body>
