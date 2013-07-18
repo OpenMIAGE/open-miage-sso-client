@@ -106,10 +106,14 @@ class OpenM_SSOClientConnectionManagerServer {
 
     public function isConnectedDisplay($sso) {
         OpenM_Log::debug("check if connected", __CLASS__, __METHOD__, __LINE__);
+
+        echo "<html><body>";
         if ($sso->isConnected())
             echo "you're connected";
         else
             echo "you're not connected";
+        echo '<script type="text/javascript">window.close();</script>';
+        echo "</body></html>";
     }
 
 }
