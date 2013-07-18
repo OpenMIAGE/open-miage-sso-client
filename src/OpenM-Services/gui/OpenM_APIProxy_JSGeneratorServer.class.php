@@ -30,83 +30,156 @@ class OpenM_APIProxy_JSGeneratorServer {
     const FILE_URL_SEPARATOR_PARAMETER = ";";
 
     private $root_path;
+    private $smarty;
 
-    public static function display($apis, $min = true, $root_path = null) {
+    private static function min($string) {
+        $string = str_replace("= ", "=", $string);
+        $string = str_replace(" =", "=", $string);
+        $string = preg_replace('/\s+/', ' ', $string);
+        $string = str_replace("  ", " ", $string);
+        $string = str_replace("\r\n", "", $string);
+        $string = str_replace("\n", "", $string);
+        $string = str_replace(' (', "(", $string);
+        $string = str_replace('( ', "(", $string);
+        $string = str_replace(' )', ")", $string);
+        $string = str_replace(') ', ")", $string);
+        $string = str_replace(': ', ":", $string);
+        $string = str_replace(' :', ":", $string);
+        $string = str_replace('{ ', "{", $string);
+        $string = str_replace(' {', "{", $string);
+        $string = str_replace(' }', "}", $string);
+        $string = str_replace('} ', "}", $string);
+        $string = str_replace(' ;', ";", $string);
+        $string = str_replace('; ', ";", $string);
+        $string = str_replace(' +', "+", $string);
+        $string = str_replace('+ ', "+", $string);
+        $string = str_replace(' -', "-", $string);
+        $string = str_replace('- ', "-", $string);
+        $string = str_replace(' ,', ",", $string);
+        $string = str_replace(', ', ",", $string);
+        return $string;
+    }
+
+    public function display($apis, $min = true) {
         $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
-        $headerEnabled = false;
+        OpenM_Log::debug("define header JS", __CLASS__, __METHOD__, __LINE__);
+        header('Content-type: text/javascript');
+        $this->smarty->assign("min", $min);
+
+        OpenM_Log::debug("recover sso proxy js file path", __CLASS__, __METHOD__, __LINE__);
+        $sso_proxy = Import::getAbsolutePath("OpenM-SSO/gui/js/OpenM_SSOConnectionProxy.js");
+        OpenM_Log::debug("recover api proxy js file path", __CLASS__, __METHOD__, __LINE__);
+        $api_proxy = Import::getAbsolutePath("OpenM-Services/gui/js/OpenM_APIProxy_AJAXController.js");
+        OpenM_Log::debug("recover api proxy tpl file path", __CLASS__, __METHOD__, __LINE__);
+        $tpl = Import::getAbsolutePath("OpenM-Services/gui/tpl/OpenM_APIProxy_Controller.tpl");
+        OpenM_Log::debug("define api proxy js controller cache id", __CLASS__, __METHOD__, __LINE__);
+        $id = "OpenM-SSO/gui/OpenM_SSOConnectionProxy.js_OpenM-Services/gui/js/OpenM_APIProxy_AJAXController.js"
+                . "_" . filectime($sso_proxy) . "_"
+                . filectime($api_proxy) . "_"
+                . ($min ? "min" : "");
+        OpenM_Log::debug("check if cache already build", __CLASS__, __METHOD__, __LINE__);
+        if ($this->smarty->isCached($tpl, $id))
+            $this->smarty->display($tpl, $id);
+        else {
+            OpenM_Log::debug("build cache", __CLASS__, __METHOD__, __LINE__);
+            $string = file_get_contents($sso_proxy);
+            if ($min)
+                $string = self::min($string);
+            $this->smarty->assign("OpenM_SSOConnectionProxy", $string);
+            $string = file_get_contents($api_proxy);
+            if ($min)
+                $string = self::min($string);
+            $this->smarty->assign("OpenM_APIProxy_AJAXController", $string);
+            OpenM_Log::debug("assign id", __CLASS__, __METHOD__, __LINE__);
+            $this->smarty->cache_id = $id;
+            $this->smarty->display($tpl);
+        }
+
+        $display = __DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl";
+
         foreach ($files as $api) {
+            OpenM_Log::debug("check if api required is exist", __CLASS__, __METHOD__, __LINE__);
             if (!is_file("$api.interface.php"))
                 die("Forbidden display");
 
+            OpenM_Log::debug("import api", __CLASS__, __METHOD__, __LINE__);
             if (!Import::php("$api"))
                 throw new ImportException("$api");
 
-            $smarty = new Smarty();
-
             $reflexion = new ReflectionClass("$api");
+            $file = $reflexion->getFileName();
 
-            $constants = $reflexion->getConstants();
-            $arrayConstants = array();
-            foreach ($constants as $name => $value) {
-                $arrayConstant = array();
-                $arrayConstant["name"] = $name;
-                $arrayConstant["value"] = $value;
-                $arrayConstants[] = $arrayConstant;
-            }
-
-            $smarty->assign("constants", $arrayConstants);
-
-            $methods = get_class_methods("$api");
-            $arrayMethods = array();
-
-            foreach ($methods as $method) {
-
-                $arrayMethod = array();
-                $arrayMethod["name"] = $method;
-
-                $r = new ReflectionMethod($api, $method);
-                $r->getParameters();
-                $i = 1;
-                $args = $r->getParameters();
-
-                $arrayParameters = array();
-
-                foreach ($args as $param) {
-                    $arrayParameter = array();
-                    $arrayParameter["name"] = $param->getName();
-                    $arrayParameter["isOptional"] = $param->isOptional();
-                    if ($param->isOptional())
-                        $arrayParameter["defaultValue"] = $param->getDefaultValue();
-                    $arrayParameter["parameterName"] = "arg$i";
-                    $arrayParameters["arg$i"] = $arrayParameter;
-                    $i++;
+            $id = $file . filectime($file) . "_" . ($min ? "min" : "");
+            OpenM_Log::debug("check if cache is exist for this api", __CLASS__, __METHOD__, __LINE__);
+            if ($this->smarty->isCached($display, $id))
+                $this->smarty->display($display, $id);
+            else {
+                OpenM_Log::debug("build cache", __CLASS__, __METHOD__, __LINE__);
+                $this->smarty->cache_id = $id;
+                $constants = $reflexion->getConstants();
+                $arrayConstants = array();
+                foreach ($constants as $name => $value) {
+                    $arrayConstant = array();
+                    $arrayConstant["name"] = $name;
+                    $arrayConstant["value"] = $value;
+                    $arrayConstants[] = $arrayConstant;
                 }
 
-                $arrayMethod["args"] = $arrayParameters;
-                $arrayMethods[] = $arrayMethod;
-            }
+                $this->smarty->assign("constants", $arrayConstants);
+                $methods = get_class_methods("$api");
+                $arrayMethods = array();
 
-            $smarty->assign("methods", $arrayMethods);
-            $smarty->assign("api", "$api");
-            $smarty->assign("api_url", $root_path);
-            $smarty->assign("min", $min);
+                foreach ($methods as $method) {
 
-            if (!$headerEnabled) {
-                header('Content-type: text/javascript');
-                $headerEnabled = true;
+                    $arrayMethod = array();
+                    $arrayMethod["name"] = $method;
+
+                    $r = new ReflectionMethod($api, $method);
+                    $r->getParameters();
+                    $i = 1;
+                    $args = $r->getParameters();
+
+                    $arrayParameters = array();
+
+                    foreach ($args as $param) {
+                        $arrayParameter = array();
+                        $arrayParameter["name"] = $param->getName();
+                        $arrayParameter["isOptional"] = $param->isOptional();
+                        if ($param->isOptional())
+                            $arrayParameter["defaultValue"] = $param->getDefaultValue();
+                        $arrayParameter["parameterName"] = "arg$i";
+                        $arrayParameters["arg$i"] = $arrayParameter;
+                        $i++;
+                    }
+
+                    $arrayMethod["args"] = $arrayParameters;
+                    $arrayMethods[] = $arrayMethod;
+                }
+
+                $this->smarty->assign("methods", $arrayMethods);
+                $this->smarty->assign("api", "$api");
+                OpenM_Log::debug("display api", __CLASS__, __METHOD__, __LINE__);
+                $this->smarty->display($display);
             }
-            $smarty->display(__DIR__ . "/tpl/OpenM_APIProxy_JSGeneratorServer.tpl");
         }
     }
 
-    public function __construct($root_path = null) {
+    public function __construct($root_path = null, $compile_dir = null, $cache_dir = NULL) {
         $this->root_path = $root_path;
+        $this->smarty = new Smarty();
+        if ($cache_dir !== null)
+            $this->smarty->setCacheDir($cache_dir);
+        if ($compile_dir !== null)
+            $this->smarty->setCompileDir($compile_dir);
+        $this->smarty->assign("api_url", $this->root_path);
+        $this->smarty->caching = true;
+        $this->smarty->compile_check = false;
     }
 
     public function handle() {
         if (isset($_GET[self::FILE_URL_PARAMETER])) {
             try {
-                self::display($_GET[self::FILE_URL_PARAMETER], isset($_GET[self::MIN_MODE_PARAMETER]), $this->root_path);
+                $this->display($_GET[self::FILE_URL_PARAMETER], isset($_GET[self::MIN_MODE_PARAMETER]));
             } catch (Exception $e) {
                 die($e->getMessage());
             }

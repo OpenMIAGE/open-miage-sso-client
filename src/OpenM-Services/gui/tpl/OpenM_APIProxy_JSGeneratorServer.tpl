@@ -31,8 +31,8 @@ var {$api}{if $min!=true} {/if}={if $min!=true} {/if}{literal}{{/literal}{if $mi
         {/if}{literal}}{/literal}{if $min!=true} {/if}{if $min!=true} 
         {/if}else{literal}{{/literal}{if $min!=true} 
             {/if}{if $min!=true}ajax{else}a{/if}.success{if $min!=true} {/if}={if $min!=true} {/if}function({if $min!=true}data{else}d{/if}){literal}{{/literal}{if $min!=true}callback_function({if $min!=true}data{else}d{/if}){else}cb({if $min!=true}data{else}d{/if}){/if}{literal}}{/literal};{if $min!=true} 
-            {/if}$.ajax({if $min!=true}ajax{else}a{/if}){if $min!=true};{/if}{if $min!=true} 
+            {/if}OpenM_APIProxy_AJAXController.call({if $min!=true}ajax{else}a{/if}){if $min!=true};{/if}{if $min!=true} 
         {/if}{literal}}{/literal}{if $min!=true} 
      {/if}{literal}}{/literal},{if $min!=true} 
-{/if}{/foreach}{if $min!=true}  {/if}'ok':1{if $min!=true} 
+{/if}{/foreach}{if $min!=true} {/if}'ok':1{if $min!=true} 
 {/if}{literal}}{/literal};
