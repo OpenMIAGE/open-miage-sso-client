@@ -57,6 +57,8 @@ class OpenM_APIProxy_JSGeneratorServer {
         $string = str_replace('- ', "-", $string);
         $string = str_replace(' ,', ",", $string);
         $string = str_replace(', ', ",", $string);
+        $string = str_replace(' /', "/", $string);
+        $string = str_replace('/ ', "/", $string);
         return $string;
     }
 
