@@ -4,6 +4,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         session_mode: "",
         api_selected: "",
         alreadyHaveConnectionOK: false,
+        alreadyHaveTryingReconnection: false,
         MODE_PARAMETER: "API_SESSION_MODE",
         API_SELECTION_PARAMETER: "API",
         MODE_API_SELECTION: "API_SELECTION",
@@ -12,6 +13,9 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         ACTION_PARAMETER: "ACTION",
         IS_CONNECTED_ACTION: "isConnected",
         RETURN_IS_CONNECTED_PARAMETER: "isConnected",
+        LOGIN_ACTION: "login",
+        RETURN_TO_PARAMETER: "proxy_return_to",
+        DASH: "! !",
         connected: false,
         frame: undefined,
         waitingConnectionInterval: 1000,
@@ -19,12 +23,25 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         waitingReConnectionTimeOut: 30,
         waitingConnectionInProgress: false,
         waitingReConnectionInProgress: false,
+        redirectionToLoginFormEnabled: false,
+        login: function() {
+            if (this.connected)
+                return;
+            var u = this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected + "&" + this.ACTION_PARAMETER + "=" + this.LOGIN_ACTION + "&" + this.RETURN_TO_PARAMETER + "=" + encodeURI(window.location.href.replace("#", this.DASH));
+            window.location = u;
+        },
         open: function() {
+            if (this.redirectionToLoginFormEnabled)
+                return this.login();
             if (this.connected)
                 return;
             if (this.waitingConnectionInProgress && typeof(this.frame) !== 'undefined' && !this.frame.closed)
                 return;
-            this.frame = window.open(this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected, "popup", "toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, width=450, height=450, screenX=200, screenY=200");
+            var width = 450;
+            var height = 450;
+            var left = (screen.width - width) / 2;
+            var top = (screen.height - height) / 2;
+            this.frame = window.open(this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected, "popup", "toolbar=0, location=0, directories=0, status=0, resizable=0, copyhistory=0, height=" + height + ", width=" + width + ", top=" + top + ", left=" + left + "");
             if (this.waitingConnectionInProgress)
                 return;
             var c = this;
@@ -62,12 +79,12 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         reconnect: function(loginIfNotConnected) {
             if (!this.alreadyHaveConnectionOK && loginIfNotConnected !== true)
                 return;
-            if (!this.alreadyHaveConnectionOK && loginIfNotConnected === true){
+            if (!this.alreadyHaveConnectionOK && loginIfNotConnected === true && this.alreadyHaveTryingReconnection === true)
                 return this.open();
-            }
             if (this.waitingReConnectionInProgress)
                 return;
             this.connected = false;
+            this.alreadyHaveTryingReconnection = true;
             this.reconnectframe = $(document.createElement("iframe"));
             this.reconnectframe.attr("src", this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected);
             this.reconnectframe.attr("position", "absolute");
