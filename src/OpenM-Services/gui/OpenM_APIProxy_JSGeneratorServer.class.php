@@ -6,10 +6,12 @@ if (!Import::php("Smarty"))
     throw new ImportException("Smarty");
 
 /**
- * 
- * @package OpenM-Services
- * @subpackage gui
- * @license http://www.apache.org/licenses/LICENSE-2.0 Licensed under the Apache License, Version 2.0 (the "License");
+ * This server manage Javascrip API client file generation for an api list in parameter
+ * @package OpenM\OpenM-Services
+ * @subpackage OpenM\OpenM-Services\gui
+ * @copyright (c) 2013, www.open-miage.org
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Licensed under the Apache 
+ * License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
@@ -62,6 +64,12 @@ class OpenM_APIProxy_JSGeneratorServer {
         return $string;
     }
 
+    /**
+     * used to display javascript API client content generated from an api list
+     * @param String $apis is the list of api need to generate clients
+     * @param boolean $min true if minified version required, else false
+     * @throws ImportException if api definition file required not found
+     */
     public function display($apis, $min = true) {
         $files = explode(self::FILE_URL_SEPARATOR_PARAMETER, $apis);
         OpenM_Log::debug("define header JS", __CLASS__, __METHOD__, __LINE__);
@@ -166,6 +174,14 @@ class OpenM_APIProxy_JSGeneratorServer {
         }
     }
 
+    /**
+     * used to instanciate server from the path from host to server directory,
+     * absolute/relative dir path of smarty compilation dir and absolute/relative dir path of
+     * smarty cache dir
+     * @param String $root_path is relative path from host to server directory in URL
+     * @param String $compile_dir is absolute/relative directory path of smarty compile dir
+     * @param String $cache_dir is absolute/relative directory path of smarty cache dir
+     */
     public function __construct($root_path = null, $compile_dir = null, $cache_dir = NULL) {
         $this->root_path = $root_path;
         $this->smarty = new Smarty();
@@ -178,6 +194,10 @@ class OpenM_APIProxy_JSGeneratorServer {
         $this->smarty->compile_check = false;
     }
 
+    /**
+     * server handler URL controller
+     * this method is required to catch URL
+     */
     public function handle() {
         if (isset($_GET[self::FILE_URL_PARAMETER])) {
             try {
