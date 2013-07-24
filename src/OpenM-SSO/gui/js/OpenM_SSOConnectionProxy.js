@@ -28,7 +28,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             var height = 450;
             var left = (screen.width - width) / 2;
             var top = (screen.height - height) / 2;
-            this.frame = window.open(this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected, "popup", "toolbar=0, location=0, directories=0, status=0, scrollbars=0, resizable=0, copyhistory=0, height=" + height + ", width=" + width + ", top=" + top + ", left=" + left + "");
+            this.frame = window.open(this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected, "popup", "toolbar=0, location=0, directories=0, status=0, resizable=0, copyhistory=0, height=" + height + ", width=" + width + ", top=" + top + ", left=" + left + "");
             if (this.waitingConnectionInProgress)
                 return;
             var c = this;
