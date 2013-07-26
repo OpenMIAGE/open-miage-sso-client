@@ -20,4 +20,4 @@ Dependencies
 Remarques
 =====================
  * ces développements sont fait sous netbeans : [netbeans.org/downloads](http://netbeans.org/downloads/)
- * voir CHANGES-1.0.6 et précédents dans CHANGES/
+ * voir CHANGES-1.0.7 et précédents dans CHANGES/
