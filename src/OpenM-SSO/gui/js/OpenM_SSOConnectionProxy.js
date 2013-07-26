@@ -76,6 +76,8 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             }, c.waitingConnectionTimeOut * 1000);
         },
         reconnectframe: undefined,
+        reconnectionCheckInterval: undefined,
+        reconnectionTimeOut: undefined,
         reconnect: function(loginIfNotConnected) {
             if (!this.alreadyHaveConnectionOK && loginIfNotConnected !== true)
                 return;
@@ -85,6 +87,10 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                 return;
             this.connected = false;
             this.alreadyHaveTryingReconnection = true;
+            clearInterval(this.reconnectionCheckInterval);
+            clearTimeout(this.reconnectionTimeOut);
+            if (this.reconnectframe !== undefined)
+                this.reconnectframe.remove();
             this.reconnectframe = $(document.createElement("iframe"));
             this.reconnectframe.attr("src", this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected);
             this.reconnectframe.attr("position", "absolute");
@@ -96,9 +102,10 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             this.reconnectframe.attr("background-color", "transparent");
             $("html body").append(this.reconnectframe);
             var c = this;
-            var t;
+            var t = c.reconnectionTimeOut;
             c.waitingReConnectionInProgress = true;
-            var i = setInterval(function() {
+            var i = c.reconnectionCheckInterval;
+            i = setInterval(function() {
                 c.isConnected(function() {
                     if (c.connected) {
                         clearInterval(i);
