@@ -100,6 +100,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             this.reconnectframe.attr("height", 1);
             this.reconnectframe.attr("border", 0);
             this.reconnectframe.attr("background-color", "transparent");
+            this.reconnectframe.attr("z-index", 0);
             $("html body").append(this.reconnectframe);
             var c = this;
             var t = c.reconnectionTimeOut;
