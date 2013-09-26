@@ -26,10 +26,10 @@ Import::php("OpenM-SSO.client.OpenM_SSOClientPoolSessionManager");
  * @author Gaël Saunier
  */
 class OpenM_SSOClientPoolSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSession {
-    
+
     private $sso;
     private $manager;
-    
+
     /**
      * The constructor is only used by OpenM_SSOClientPoolSessionManager
      * to intercept logout calling on OpenM_SSOClientSession objects.
@@ -43,7 +43,7 @@ class OpenM_SSOClientPoolSessionImpl implements OpenM_SSOClientSession, OpenM_SS
         $this->sso = $sso;
         $this->manager = $manager;
     }
-    
+
     public function checkAuth($properties = null, $redirectToLoginIfNotConnected = false, $optimisticMode = true, $isSSOapiActivated = true) {
         return $this->sso->checkAuth($properties, $redirectToLoginIfNotConnected, $optimisticMode, $isSSOapiActivated);
     }
@@ -90,6 +90,10 @@ class OpenM_SSOClientPoolSessionImpl implements OpenM_SSOClientSession, OpenM_SS
 
     public function setEmbeded() {
         return $this->sso->setEmbeded();
+    }
+
+    public function __call($name, $arguments) {
+        return call_user_func_array(array($this->sso, $name), $arguments);
     }
 
 }

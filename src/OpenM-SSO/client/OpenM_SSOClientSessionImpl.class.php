@@ -87,7 +87,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
      * initialise une session (charge les parametres)
      * @throws InvalidArgumentException
      */
-    private function init() {
+    public function init() {
         OpenM_Log::debug("init begin", __CLASS__, __METHOD__, __LINE__);
         $this->reset();
 
