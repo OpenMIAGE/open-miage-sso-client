@@ -357,9 +357,13 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
             $this->isLogoutInProgress = false;
             return;
         }
-        if ($this->isSSOapiConnectionOK() && $this->SSOClient != null)
-            $this->SSOClient->closeSession($this->SSID);
-
+        if ($this->isSSOapiConnectionOK() && $this->SSOClient != null) {
+            try {
+                $this->SSOClient->closeSession($this->SSID);
+            } catch (Exception $e) {
+                OpenM_Log::debug("Exception : " . $e->getMessage(), __CLASS__, __METHOD__, __LINE__);
+            }
+        }
         $OpenIDClient = $this->OpenIDClient;
         $this->reset();
         $this->isLogoutInProgress = true;
