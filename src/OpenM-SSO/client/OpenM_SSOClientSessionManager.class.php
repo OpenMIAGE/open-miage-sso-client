@@ -85,10 +85,7 @@ class OpenM_SSOClientSessionManager {
             throw new Exception(self::OpenM_ID_STORE_PATH . " not defined in $propertyFilePath");
 
         $return = new OpenM_SSOClientSessionImpl(
-                        $p->get(self::OpenM_ID_API_PATH),
-                        $p->get(self::OpenM_ID_STORE_PATH),
-                        $p->get(self::OpenM_ID_REALM),
-                        $p->get(self::OpenM_SSO_API_PREFIX . self::OpenM_SSO_API_PATH_SUFFIX)
+                $p->get(self::OpenM_ID_API_PATH), dirname(realpath($propertyFilePath)) . "/" . $p->get(self::OpenM_ID_STORE_PATH), $p->get(self::OpenM_ID_REALM), $p->get(self::OpenM_SSO_API_PREFIX . self::OpenM_SSO_API_PATH_SUFFIX)
         );
 
         OpenM_SessionController::set($this->varSessionName, $return);
