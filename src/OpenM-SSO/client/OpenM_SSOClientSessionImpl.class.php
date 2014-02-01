@@ -186,6 +186,11 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
             OpenM_Log::debug("end of login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
             return $this->getProperties();
         }
+        OpenM_Log::debug("check if login is in progress from another script", __CLASS__, __METHOD__, __LINE__);
+        if ($this->isLoginInProcess && OpenM_URL::getURLwithoutParameters() !== OpenM_URL::getURLwithoutParameters($this->uri)) {
+            $this->init();
+            return $this->login($properties, $force);
+        }
         OpenM_Log::debug("login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
         if (($force || $this->OpenIdConnectionStatus == self::STATUS_OpenID_NOT_CONNECTED) && !$this->isLoginInProcess) {
             $this->init();
