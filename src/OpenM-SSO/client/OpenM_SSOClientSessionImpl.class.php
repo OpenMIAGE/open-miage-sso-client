@@ -195,6 +195,15 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
     }
 
     public function checkAuth($properties = null, $redirectToLoginIfNotConnected = false, $optimisticMode = true, $isSSOapiActivated = true) {
+        OpenM_Log::debug("check if auth is in progress from another uri", __CLASS__, __METHOD__, __LINE__);
+        if (OpenM_URL::getURLwithoutParameters() !== OpenM_URL::getURLwithoutParameters($this->uri)) {
+            OpenM_Log::debug("auth in progress from another uri, launch re-init of Auth", __CLASS__, __METHOD__, __LINE__);
+            $isLoginInProgress = $this->isLoginInProcess;
+            $this->init();
+            $this->isLoginInProcess = $isLoginInProgress;
+            return $this->checkAuth($properties, $redirectToLoginIfNotConnected, $optimisticMode, $isSSOapiActivated);
+        }
+
         OpenM_Log::debug("checkAuth begin", __CLASS__, __METHOD__, __LINE__);
         if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_ERROR && $this->connectedAtLeastOneTimeBefore)
             $this->init();
