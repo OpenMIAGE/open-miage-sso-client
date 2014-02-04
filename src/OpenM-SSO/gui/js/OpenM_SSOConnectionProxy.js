@@ -75,6 +75,9 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                 c.waitingConnectionInProgress = false;
             }, c.waitingConnectionTimeOut * 1000);
         },
+        reconnectFail: function() {
+            window.location.reload();
+        },
         reconnectframe: undefined,
         reconnectionCheckInterval: undefined,
         reconnectionTimeOut: undefined,
@@ -112,8 +115,12 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                         clearInterval(i);
                         if (typeof(t) !== 'undefined')
                             clearTimeout(t);
-                        if (c.reconnectframe !== undefined)
-                            c.reconnectframe.remove();
+                        if (c.reconnectframe !== undefined) {
+                            setTimeout(function() {
+                                if (c.reconnectframe !== undefined)
+                                    c.reconnectframe.remove();
+                            }, 2000);
+                        }
                         c.waitingReConnectionInProgress = false;
                         c.onReconnectionOK();
                     }
@@ -123,8 +130,13 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                 if (typeof(i) !== 'undefined')
                     clearInterval(i);
                 if (c.reconnectframe !== undefined && typeof(c.reconnectframe.close) === 'function')
-                    c.reconnectframe.close();
+                    setTimeout(function() {
+                        if (c.reconnectframe !== undefined && typeof(c.reconnectframe.close) === 'function')
+                            c.reconnectframe.close();
+                    }, 2000);
                 c.waitingReConnectionInProgress = false;
+                if (!c.connected && typeof(c.reconnectFail) === "function")
+                    c.reconnectFail();
             }, c.waitingReConnectionTimeOut * 1000);
         },
         isConnected: function(callBack, synchro) {
