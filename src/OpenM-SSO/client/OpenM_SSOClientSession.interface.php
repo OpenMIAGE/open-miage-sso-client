@@ -48,10 +48,14 @@ interface OpenM_SSOClientSession {
      * using OpenID protocol
      * @param boolean $force is forcing reconnection in case of true, else connect
      * only if conection is not OK
+     * @param boolean $redirect_to_login login is used to recreate sso token,
+     * not everytimes to re-login with the login form.
+     * Now it's possible to ask user if he whant to login before redirect him 
+     * to login form
      * @return null|HashtableString contains properties asked
      * and values assciated
      */
-    public function login($properties = null, $force = false);
+    public function login($properties = null, $force = false, $redirect_to_login = true);
 
     /**
      * CheckAuth by using OpenM_ID. it's possible to just check
@@ -103,7 +107,7 @@ interface OpenM_SSOClientSession {
      * connection OK else empty
      */
     public function getToken();
-    
+
     /**
      * set URL redirection target to embeded view of OpenM-ID
      */

@@ -60,8 +60,8 @@ class OpenM_SSOClientPoolSessionImpl implements OpenM_SSOClientSession, OpenM_SS
         return $this->sso->isConnected($optimisticMode);
     }
 
-    public function login($properties = null, $force = false) {
-        return $this->sso->login($properties, $force);
+    public function login($properties = null, $force = false, $redirect_to_login = true) {
+        return $this->sso->login($properties, $force, $redirect_to_login);
     }
 
     public function logout($redirectToLogin = true) {

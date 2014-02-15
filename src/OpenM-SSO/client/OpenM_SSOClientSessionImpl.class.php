@@ -180,7 +180,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         return $isOk;
     }
 
-    public function login($properties = null, $force = false) {
+    public function login($properties = null, $force = false, $redirect_to_login = true) {
         if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_CONNECTED && $this->isLoginInProcess) {
             $this->isLoginInProcess = false;
             OpenM_Log::debug("end of login" . ($force ? " (forced)" : ""), __CLASS__, __METHOD__, __LINE__);
@@ -191,7 +191,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
             $this->init();
             $this->isLoginInProcess = true;
         }
-        return $this->checkAuth($properties, true);
+        return $this->checkAuth($properties, $redirect_to_login);
     }
 
     public function checkAuth($properties = null, $redirectToLoginIfNotConnected = false, $optimisticMode = true, $isSSOapiActivated = true) {

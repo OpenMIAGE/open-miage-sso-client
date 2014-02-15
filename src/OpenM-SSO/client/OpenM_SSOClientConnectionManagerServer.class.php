@@ -26,13 +26,13 @@ Import::php("OpenM-SSO.client.OpenM_SSOClientPoolSessionManager");
 class OpenM_SSOClientConnectionManagerServer {
 
     private $config_file_path;
-    private $embeded;
 
     const LOGIN_IN_PROGRESS = "OpenM_IDLoginClientServer_login_in_progress";
     const SESSION_MODE = "OpenM_IDLoginClientServer_session_mode";
     const MODE_PARAMETER = "API_SESSION_MODE";
     const API_SELECTION_PARAMETER = "API";
     const MODE_API_SELECTION = "API_SELECTION";
+    const REDIRECT_TO_LOGIN = "REDIRECT_TO_LOGIN";
     const MODE_ALL_API = "ALL_API";
     const MODE_WITHOUT_API = "WITHOUT_API";
     const SESSION_API_SELECTED = "OpenM_IDLoginClientServer_api_selected";
@@ -47,12 +47,10 @@ class OpenM_SSOClientConnectionManagerServer {
      * config file path is required to instanciate connection server
      * @param String $config_file_path if file path to property file that
      * parameterized the SSO connection
-     * @param boolean $embeded true by default to manage embeded display for iframe
      */
-    public function __construct($config_file_path, $embeded = true) {
+    public function __construct($config_file_path) {
         OpenM_Log::debug("server initialisation", __CLASS__, __METHOD__, __LINE__);
         $this->config_file_path = $config_file_path;
-        $this->embeded = $embeded;
     }
 
     /**
@@ -120,11 +118,6 @@ class OpenM_SSOClientConnectionManagerServer {
                 break;
         }
 
-        if ($this->embeded) {
-            $sso->setEmbeded();
-            OpenM_Log::debug("embeded case", __CLASS__, __METHOD__, __LINE__);
-        }
-
         switch ($action) {
             case self::IS_CONNECTED_ACTION:
                 OpenM_Log::debug("isConnected", __CLASS__, __METHOD__, __LINE__);
@@ -141,7 +134,7 @@ class OpenM_SSOClientConnectionManagerServer {
                 break;
             default:
                 OpenM_Log::debug("action:login(null, true)", __CLASS__, __METHOD__, __LINE__);
-                $sso->login(null, true);
+                $sso->login(null, true, isset($_GET[self::REDIRECT_TO_LOGIN]));
                 $this->isConnectedDisplay($sso);
                 break;
         }
@@ -170,14 +163,21 @@ class OpenM_SSOClientConnectionManagerServer {
 
     private function isConnectedDisplay($sso) {
         OpenM_Log::debug("check if connected", __CLASS__, __METHOD__, __LINE__);
-
-        echo "<html><body>";
-        if ($sso->isConnected())
-            echo "you're connected";
-        else
-            echo "you're not connected";
-        echo '<script type="text/javascript">window.close();</script>';
-        echo "</body></html>";
+        ?>
+        <html><body>
+                <?php
+                if ($sso->isConnected())
+                    echo "you're connected";
+                else
+                    echo "you're not connected";
+                ?>
+                <script type="text/javascript">
+                    if (window.parent !== undefined && typeof(window.parent.openm_id_connection_trigger) === "function")
+                        window.parent.parent.openm_id_connection_trigger();
+                    window.close();
+                </script>;
+            </body></html>
+        <?php
     }
 
 }
