@@ -41,7 +41,7 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
                 if (typeof(ajax.callingQueueId) !== 'undefined')
                     c.callingQueue.splice(ajax.callingQueueId, 1);
             } else if (type === 'error' && typeof(error) === 'string' && error.search("ERRNO:-1") === -1) {
-                c.onError(c.CONNECTION_LOST, error);
+                c.onError(c.INTERNAL_ERROR, error);
                 if (typeof(ajax.callingQueueId) !== 'undefined')
                     c.callingQueue.splice(ajax.callingQueueId, 1);
                 return;
@@ -61,7 +61,7 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
                 return;
             c.callingStatus = c.STATUS_KO;
             if (type === 'error' && typeof(error) === 'string' && error.search("ERRNO:-1") >= 0) {
-                c.onError(c.CONNECTION_LOST);
+                c.onError(c.CONNECTION_LOST, error);
                 c.reconnect();
             }
         },
