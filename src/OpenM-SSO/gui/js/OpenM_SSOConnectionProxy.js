@@ -85,8 +85,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                     .addClass("OpenM_SSOConnectionProxy_Message")
                     .append(timerA))
                     .append($(document.createElement("img"))
-                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif"))
-                    );
+                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif")));
             var timerTimeOut = this.waitingReConnectionTimeOut;
             timerA.text("(" + timerTimeOut + ")");
             var timerInterval = setInterval(function() {

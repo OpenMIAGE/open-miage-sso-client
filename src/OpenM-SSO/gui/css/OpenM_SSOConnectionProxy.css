@@ -7,18 +7,21 @@
 */
 
 .OpenM_SSOConnectionProxy {
-    width: 270px;
-    height:32px;
+    width: 282px;
+    height:44px;
     left: 50%;
     bottom: 5px;
-    margin-left: -135px;
+    margin-left: -141px;
     position: fixed;
+    background-color: silver;
+    padding: 6px;
+    -webkit-border-radius: 6px;    
 }
 
 .OpenM_SSOConnectionProxy iframe { 
     position : absolute;
-    left: 16px;
-    bottom: 16px;
+    left: 22px;
+    bottom: 22px;
     width: 1px;
     height: 1px;
     border: 0px;
@@ -28,9 +31,9 @@
 
 .OpenM_SSOConnectionProxy_Message {
     position: relative;
-    margin-left: 40px;
+    margin-left: 46px;
     font-size:  16px;
-    padding-top: 8px;
+    padding-top: 14px;
     height: 32px;
 }
 
@@ -38,7 +41,8 @@
     height:  32px;
     width: 32px;
     position:absolute;
-    left: 0px;
-    bottom: 0px;
+    left: 12px;
+    bottom: 12px;
     z-index: 999;
+    background-color: silver;
 }
