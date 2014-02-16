@@ -60,6 +60,7 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         reconnectframe: undefined,
         reconnectionCheckInterval: undefined,
         reconnectionTimeOut: undefined,
+        reconnectionMessage: " reconnection in progress... ",
         reconnect: function(loginIfNotConnected) {
             if (!this.alreadyHaveConnectionOK && loginIfNotConnected !== true)
                 return;
@@ -75,27 +76,16 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                 this.reconnectframe.remove();
             var timerA = $(document.createElement("span"));
             this.reconnectframe = $(document.createElement("iframe"))
-                    .attr("src", this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected)
-                    .css("position", "absolute").css("left", 16).css("bottom", 16)
-                    .attr("width", 1).attr("height", 1).attr("border", 0)
-                    .css("background-color", "transparent").css("z-index", 1);
+                    .attr("src", this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected);
             $("html body").append($(document.createElement("div"))
-                    .css("width", 270).css("height", 32)
-                    .css("left", "50%").css("bottom", 5).css("margin-left", -135)
-                    .css("position", "fixed")
+                    .addClass("OpenM_SSOConnectionProxy")
                     .append(this.reconnectframe)
                     .append($(document.createElement("div"))
-                    .append(" reconnection in progress... ")
-                    .css("position", "relative").css("margin-left", 40)
-                    .css("font-size", 16).css("padding-top", 8)
-                    .css("height", 32).append(timerA))
+                    .append(this.reconnectionMessage)
+                    .addClass("OpenM_SSOConnectionProxy_Message")
+                    .append(timerA))
                     .append($(document.createElement("img"))
-                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif")
-                    .css("height", 32).css("width", 32)
-                    .css("position", "absolute")
-                    .css("left", 0).css("bottom", 0)
-                    .css("z-index", 999))
-                    );
+                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif")));
             var timerTimeOut = this.waitingReConnectionTimeOut;
             timerA.text("(" + timerTimeOut + ")");
             var timerInterval = setInterval(function() {
@@ -126,12 +116,11 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
                     c.reconnectFail();
             }, c.waitingReConnectionTimeOut * 1000);
         },
-        isConnected: function(callBackConnected, synchro, callBackNotConnected) {
+        isConnected: function(callBackConnected, synchro) {
             var c = this;
             if (synchro === undefined)
                 synchro = false;
             var cb = callBackConnected;
-            var cbnc = callBackNotConnected;
             var a = {
                 async: !synchro,
                 type: 'POST',
