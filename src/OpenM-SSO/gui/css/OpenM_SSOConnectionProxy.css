@@ -1,0 +1,44 @@
+/* 
+    Document   : OpenM_SSOConnectionProxy
+    Created on : 16 févr. 2014, 12:01:09
+    Author     : Gaël Saunier
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.OpenM_SSOConnectionProxy {
+    width: 270px;
+    height:32px;
+    left: 50%;
+    bottom: 5px;
+    margin-left: -135px;
+    position: fixed;
+}
+
+.OpenM_SSOConnectionProxy iframe { 
+    position : absolute;
+    left: 16px;
+    bottom: 16px;
+    width: 1px;
+    height: 1px;
+    border: 0px;
+    background-color:transparent;
+    z-index: 1;   
+}
+
+.OpenM_SSOConnectionProxy_Message {
+    position: relative;
+    margin-left: 40px;
+    font-size:  16px;
+    padding-top: 8px;
+    height: 32px;
+}
+
+.OpenM_SSOConnectionProxy img { 
+    height:  32px;
+    width: 32px;
+    position:absolute;
+    left: 0px;
+    bottom: 0px;
+    z-index: 999;
+}
