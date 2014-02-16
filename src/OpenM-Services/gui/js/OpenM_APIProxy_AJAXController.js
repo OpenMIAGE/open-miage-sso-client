@@ -37,16 +37,16 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
                 return;
             var c = this;
             if (type === 'parsererror') {
-                c.onError(c.INTERNAL_ERROR);
+                c.onError(c.INTERNAL_ERROR, error);
                 if (typeof(ajax.callingQueueId) !== 'undefined')
                     c.callingQueue.splice(ajax.callingQueueId, 1);
             } else if (type === 'error' && typeof(error) === 'string' && error.search("ERRNO:-1") === -1) {
-                c.onError(c.INTERNAL_ERROR);
+                c.onError(c.CONNECTION_LOST, error);
                 if (typeof(ajax.callingQueueId) !== 'undefined')
                     c.callingQueue.splice(ajax.callingQueueId, 1);
                 return;
             } else if (type === 'timeout')
-                c.onError(c.TIME_OUT);
+                c.onError(c.TIME_OUT, error);
 
             if (ajax.called === 0 || ajax.called === 1) {
                 if (ajax.errors === undefined)
@@ -136,10 +136,10 @@ if (typeof(OpenM_APIProxy_AJAXController) === 'undefined') {
         addErrorListener: function(listener) {
             this.errorlisteners.push(listener);
         },
-        onError: function(errno) {
+        onError: function(errno, error_message) {
             $.each(this.errorlisteners, function(key, value) {
                 if (typeof(value) === 'function')
-                    value(errno);
+                    value(errno, error_message);
             });
         },
         errorlisteners: new Array()
