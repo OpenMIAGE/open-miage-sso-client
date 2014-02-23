@@ -61,6 +61,32 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
         reconnectionCheckInterval: undefined,
         reconnectionTimeOut: undefined,
         reconnectionMessage: " reconnection in progress... ",
+        reconnectDefaultDisplay: function() {
+            var timerA = $(document.createElement("span"));
+            $("html body").append($(document.createElement("div"))
+                    .addClass("OpenM_SSOConnectionProxy")
+                    .append(this.reconnectframe)
+                    .append($(document.createElement("div"))
+                    .append(this.reconnectionMessage)
+                    .addClass("OpenM_SSOConnectionProxy_Message")
+                    .append(timerA))
+                    .append($(document.createElement("img"))
+                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif")));
+            var timerTimeOut = this.waitingReConnectionTimeOut;
+            timerA.text("(" + timerTimeOut + ")");
+            var timerTimeOut = this.waitingReConnectionTimeOut;
+            var timerInterval = setInterval(function() {
+                if (timerA !== undefined && typeof(timerA.text) === "function") {
+                    if (timerTimeOut > 0)
+                        timerTimeOut--;
+                    else
+                        clearInterval(timerInterval);
+                    timerA.text("(" + timerTimeOut + ")");
+                }
+                else
+                    clearInterval(timerInterval);
+            }, 1000);
+        },
         reconnect: function(loginIfNotConnected) {
             if (!this.alreadyHaveConnectionOK && loginIfNotConnected !== true)
                 return;
@@ -74,31 +100,9 @@ if (typeof(OpenM_SSOConnectionProxy) === 'undefined') {
             clearTimeout(this.reconnectionTimeOut);
             if (this.reconnectframe !== undefined)
                 this.reconnectframe.remove();
-            var timerA = $(document.createElement("span"));
             this.reconnectframe = $(document.createElement("iframe"))
                     .attr("src", this.url + "?" + this.MODE_PARAMETER + "=" + this.session_mode + "&" + this.API_SELECTION_PARAMETER + "=" + this.api_selected);
-            $("html body").append($(document.createElement("div"))
-                    .addClass("OpenM_SSOConnectionProxy")
-                    .append(this.reconnectframe)
-                    .append($(document.createElement("div"))
-                    .append(this.reconnectionMessage)
-                    .addClass("OpenM_SSOConnectionProxy_Message")
-                    .append(timerA))
-                    .append($(document.createElement("img"))
-                    .attr("src", this.resource_dir + "OpenM-SSO/gui/img/loader.gif")));
-            var timerTimeOut = this.waitingReConnectionTimeOut;
-            timerA.text("(" + timerTimeOut + ")");
-            var timerInterval = setInterval(function() {
-                if (timerA !== undefined && typeof(timerA.text) === "function") {
-                    if (timerTimeOut > 0)
-                        timerTimeOut--;
-                    else
-                        clearInterval(timerInterval);
-                    timerA.text("(" + timerTimeOut + ")");
-                }
-                else
-                    clearInterval(timerInterval);
-            }, 1000);
+            this.reconnectDefaultDisplay();
             var c = this;
             var t = c.reconnectionTimeOut;
             c.waitingReConnectionInProgress = true;
