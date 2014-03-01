@@ -111,7 +111,7 @@ interface OpenM_SSOClientSession {
     /**
      * get OpenM-ID provider URL
      */
-    public function getOpenM_ID_URL();
+    public function getOpenM_ID_MyAccount_URL();
 }
 
 ?>

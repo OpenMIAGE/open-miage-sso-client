@@ -88,8 +88,8 @@ class OpenM_SSOClientPoolSessionImpl implements OpenM_SSOClientSession, OpenM_SS
         return $this->sso->getToken();
     }
 
-    public function getOpenM_ID_URL() {
-        return $this->sso->getOpenM_ID_URL();
+    public function getOpenM_ID_MyAccount_URL() {
+        return $this->sso->getOpenM_ID_MyAccount_URL();
     }
 
     public function __call($name, $arguments) {
