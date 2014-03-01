@@ -460,10 +460,9 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         return $this->sso_api_path . "";
     }
 
-    public function setEmbeded() {
-        $this->embeded = true;
+    public function getOpenM_ID_URL() {
+        return $this->openM_ID_api_path."";
     }
-
 }
 
 ?>

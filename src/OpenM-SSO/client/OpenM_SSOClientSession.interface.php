@@ -109,9 +109,9 @@ interface OpenM_SSOClientSession {
     public function getToken();
 
     /**
-     * set URL redirection target to embeded view of OpenM-ID
+     * get OpenM-ID provider URL
      */
-    public function setEmbeded();
+    public function getOpenM_ID_URL();
 }
 
 ?>
