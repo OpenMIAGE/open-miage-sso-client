@@ -1,8 +1,8 @@
  * client Changes
-  * N/A
+  * remove setEmbeded()
  
  * adds
-  * N/A
+  * add getOpenM_ID_MyAccount_URL() to recover URL to My OpenM-ID account
 
  * libraries Changes
   * upgrade openid version to commit of 21/02/2014
