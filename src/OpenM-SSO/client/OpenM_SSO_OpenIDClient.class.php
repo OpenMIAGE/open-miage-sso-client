@@ -166,10 +166,9 @@ class OpenM_SSO_OpenIDClient {
      * used to recover the OID of connected user by using OpenM_ID / OpenM-ID_GET API
      * @param boolean $redirectToLoginIfNotConnected is true if you whant to
      * redirect to OpenM_ID login form in case of not connected, else just return
-     * @param boolean $embeded manage redirection to embeded view of OpenM-ID
      * @return String OID of user
      */
-    public function get($redirectToLoginIfNotConnected = true, $embeded = false) {
+    public function get($redirectToLoginIfNotConnected = true) {
         if (isset($_GET[OpenM_ID::OID_PARAMETER])) {
             OpenM_Log::debug(OpenM_ID::OID_PARAMETER . " present in url (" . $_GET[OpenM_ID::OID_PARAMETER] . ")", __CLASS__, __METHOD__, __LINE__);
             $this->OID = OpenM_URL::decode($_GET[OpenM_ID::OID_PARAMETER]);
@@ -180,7 +179,7 @@ class OpenM_SSO_OpenIDClient {
 
         if ($this->OID == null && !isset($_GET[OpenM_ID::OID_PARAMETER])) {
             OpenM_Log::debug(OpenM_ID::OID_PARAMETER . " not present in url and not previewsly loaded", __CLASS__, __METHOD__, __LINE__);
-            OpenM_Header::redirect($this->openM_ID_api_path . "?".($embeded?"embeded&":"") . OpenM_ID::GetOpenID_API . "&return_to=" . OpenM_URL::encode($this->initialURL) . ((!$redirectToLoginIfNotConnected) ? ("&" . OpenM_ID::NO_REDIRECT_TO_LOGIN_PARAMETER) : ""));
+            OpenM_Header::redirect($this->openM_ID_api_path . "?" . OpenM_ID::GetOpenID_API . "&return_to=" . OpenM_URL::encode($this->initialURL) . ((!$redirectToLoginIfNotConnected) ? ("&" . OpenM_ID::NO_REDIRECT_TO_LOGIN_PARAMETER) : ""));
         }
     }
 

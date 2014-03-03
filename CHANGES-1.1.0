@@ -1,5 +1,7 @@
  * client Changes
   * remove setEmbeded()
+  * set reset as public service
+  * set init as private service
  
  * adds
   * add getOpenM_ID_MyAccount_URL() to recover URL to My OpenM-ID account
