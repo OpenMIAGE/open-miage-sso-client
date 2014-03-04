@@ -40,6 +40,7 @@ class OpenM_SSOClientPoolSessionManager {
     private $name_to_path;
     private $path_to_ssoManager;
     private $session_identifier;
+    private $configFileChangeTime;
 
     /**
      * Instanciate a manager from OpenM_ID provider, a dir path to store OpenID
@@ -269,15 +270,16 @@ class OpenM_SSOClientPoolSessionManager {
 
         OpenM_Log::debug("load manager from session", __CLASS__, __METHOD__, __LINE__);
         $manager = self::load($p->get(self::OpenM_SSO_POOL_SESSION_NAME));
-        if ($manager instanceof OpenM_SSOClientPoolSessionManager)
-            return $manager;
+        if ($manager instanceof OpenM_SSOClientPoolSessionManager) {
+            if ($manager->configFileChangeTime == filemtime($propertyFilePath))
+                return $manager;
+        }
 
         OpenM_Log::debug("create new manager instance", __CLASS__, __METHOD__, __LINE__);
         $manager = new OpenM_SSOClientPoolSessionManager(
-                        $p->get(OpenM_SSOClientSessionManager::OpenM_ID_API_PATH),
-                        $p->get(OpenM_SSOClientSessionManager::OpenM_ID_STORE_PATH),
-                        $p->get(OpenM_SSOClientSessionManager::OpenM_ID_REALM)
+                $p->get(OpenM_SSOClientSessionManager::OpenM_ID_API_PATH), $p->get(OpenM_SSOClientSessionManager::OpenM_ID_STORE_PATH), $p->get(OpenM_SSOClientSessionManager::OpenM_ID_REALM)
         );
+        $manager->configFileChangeTime = filemtime($propertyFilePath);
         $size = $p->getAll()->size();
         for ($i = 0; $i < $size; $i++) {
             $num = ($i === 0) ? "" : ".$i";
@@ -294,8 +296,8 @@ class OpenM_SSOClientPoolSessionManager {
                 OpenM_Log::debug("api found: $path", __CLASS__, __METHOD__, __LINE__);
                 if ($path == null)
                     throw new Exception(OpenM_SSOClientSessionManager::OpenM_SSO_API_PREFIX
-                            . $num . OpenM_SSOClientSessionManager::OpenM_SSO_API_PATH_SUFFIX
-                            . " not defined in $propertyFilePath"
+                    . $num . OpenM_SSOClientSessionManager::OpenM_SSO_API_PATH_SUFFIX
+                    . " not defined in $propertyFilePath"
                     );
                 $manager->put($name, $path);
             }
@@ -324,7 +326,7 @@ class OpenM_SSOClientPoolSessionManager {
             throw new InvalidArgumentException("propertyFilePath must be a file");
 
         $p = Properties::fromFile($propertyFilePath);
-        OpenM_Log::debug("remove pool session manager from session (".$p->get(self::OpenM_SSO_POOL_SESSION_NAME).")", __CLASS__, __METHOD__, __LINE__);
+        OpenM_Log::debug("remove pool session manager from session (" . $p->get(self::OpenM_SSO_POOL_SESSION_NAME) . ")", __CLASS__, __METHOD__, __LINE__);
         OpenM_SessionController::remove($p->get(self::OpenM_SSO_POOL_SESSION_NAME));
         $e = $this->path_to_ssoManager->enum();
         while ($e->hasNext()) {
