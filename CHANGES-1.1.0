@@ -1,5 +1,8 @@
  * client Changes
   * remove setEmbeded()
+  * set reset as public service
+  * set init as private service
+  * re-initialize OpenM_SSOClientPoolSessionManager onload from file if file has changed
  
  * adds
   * add getOpenM_ID_MyAccount_URL() to recover URL to My OpenM-ID account

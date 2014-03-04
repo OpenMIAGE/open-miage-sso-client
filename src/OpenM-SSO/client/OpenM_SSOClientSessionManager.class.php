@@ -33,6 +33,7 @@ class OpenM_SSOClientSessionManager {
     const OpenM_SSO_API_PATH_SUFFIX = ".path";
 
     private $varSessionName;
+    private $filemtime;
 
     /**
      * @param String $varSessionName is the name of OpenM_SSOClientSession
@@ -68,8 +69,6 @@ class OpenM_SSOClientSessionManager {
      */
     public function getFromFile($propertyFilePath = null) {
         $return = $this->getFromSession();
-        if ($return != null)
-            return $return;
 
         if ($propertyFilePath === null)
             $propertyFilePath = self::DEFAULT_FROM_PROPERTY_FILE_PATH;
@@ -77,6 +76,9 @@ class OpenM_SSOClientSessionManager {
             throw new InvalidArgumentException("propertyFilePath must be a string");
         if (!is_file($propertyFilePath))
             throw new InvalidArgumentException("propertyFilePath must be a file");
+
+        if ($return != null && filemtime($propertyFilePath) == OpenM_SessionController::get($this->varSessionName . "[filemtime]"))
+            return $return;
 
         $p = Properties::fromFile($propertyFilePath);
         if ($p->get(self::OpenM_ID_API_PATH) == null)
@@ -89,6 +91,7 @@ class OpenM_SSOClientSessionManager {
         );
 
         OpenM_SessionController::set($this->varSessionName, $return);
+        OpenM_SessionController::set($this->varSessionName . "[filemtime]", filemtime($propertyFilePath));
         return $return;
     }
 

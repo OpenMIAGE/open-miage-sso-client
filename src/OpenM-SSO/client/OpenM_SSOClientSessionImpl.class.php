@@ -51,7 +51,6 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
     private $sso_api_path;
     private $isLogoutInProgress;
     private $connectedAtLeastOneTimeBefore = false;
-    private $embeded = false;
 
     /**
      * Initialize session with api (no connection, only initializing local properties).
@@ -87,7 +86,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
      * initialise une session (charge les parametres)
      * @throws InvalidArgumentException
      */
-    public function init() {
+    private function init() {
         OpenM_Log::debug("init begin", __CLASS__, __METHOD__, __LINE__);
         $this->reset();
 
@@ -228,7 +227,7 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
 
         if ($this->OpenIdConnectionStatus == self::STATUS_OpenID_START) {
             OpenM_Log::debug("load OID", __CLASS__, __METHOD__, __LINE__);
-            $this->OID = $this->OpenIDClient->get($redirectToLoginIfNotConnected, $this->embeded);
+            $this->OID = $this->OpenIDClient->get($redirectToLoginIfNotConnected);
             $this->OpenIdConnectionStatus = self::STATUS_OpenID_GET;
         }
 
@@ -381,7 +380,10 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
             $OpenIDClient->logout($redirectToLogin);
     }
 
-    private function reset() {
+    /**
+     * reset all var
+     */
+    public function reset() {
         OpenM_Log::debug("reset", __CLASS__, __METHOD__, __LINE__);
         $openID_api_path = $this->openM_ID_api_path;
         $store_path = $this->store_path;
@@ -389,7 +391,6 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         $realm = $this->realm;
         $version = $this->version;
         $connectedAtLeastOneTimeBefore = $this->connectedAtLeastOneTimeBefore;
-        $embeded = $this->embeded;
         $array = get_object_vars($this);
         foreach ($array as $attrName => $value)
             $this->$attrName = null;
@@ -399,7 +400,6 @@ class OpenM_SSOClientSessionImpl implements OpenM_SSOClientSession, OpenM_SSOSes
         $this->realm = $realm;
         $this->version = $version;
         $this->connectedAtLeastOneTimeBefore = $connectedAtLeastOneTimeBefore;
-        $this->embeded = $embeded;
     }
 
     public function getProperties() {
