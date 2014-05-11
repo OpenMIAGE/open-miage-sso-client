@@ -277,7 +277,8 @@ class OpenM_SSOClientPoolSessionManager {
 
         OpenM_Log::debug("create new manager instance", __CLASS__, __METHOD__, __LINE__);
         $manager = new OpenM_SSOClientPoolSessionManager(
-                $p->get(OpenM_SSOClientSessionManager::OpenM_ID_API_PATH), $p->get(OpenM_SSOClientSessionManager::OpenM_ID_STORE_PATH), $p->get(OpenM_SSOClientSessionManager::OpenM_ID_REALM)
+                $p->get(OpenM_SSOClientSessionManager::OpenM_ID_API_PATH), dirname($propertyFilePath)
+                . "/" . $p->get(OpenM_SSOClientSessionManager::OpenM_ID_STORE_PATH), $p->get(OpenM_SSOClientSessionManager::OpenM_ID_REALM)
         );
         $manager->configFileChangeTime = filemtime($propertyFilePath);
         $size = $p->getAll()->size();
